@@ -43,6 +43,7 @@ for (w in weights){
 }
 
 plot(efficient_frontier$sd, efficient_frontier$ret, type = "l")
+points(apply(portfolio,2,sd),mean_return+rf)
 
 # 1b)
 sds <- apply(portfolio, 2, sd)
@@ -74,6 +75,7 @@ for (w in weights){
 }
 
 plot(high_efficient_frontier$sd, high_efficient_frontier$ret, type = "l", col = "red")
+points(sds, mean_return + rf)
 
 # 1c) 
 v_diag = cov(portfolio)
