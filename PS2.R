@@ -1,5 +1,6 @@
 library(readr)
 library(MASS)
+library(ggplot2)
 setwd("~/Applied_Quant_Finance")
 rm(list=ls())
 
@@ -37,15 +38,27 @@ for (w in weights){
   efficient_frontier <- rbind(efficient_frontier, temp)
 }
 
-plot(efficient_frontier$sd, efficient_frontier$ret, type = "l")
+industry_sd1 <- sapply(as.list(as.data.frame(industry_returns)), sd)
+
+industries <- data.frame(mean_r = mean_return, i_sd = industry_sd1)
+
+plot(industries$i_sd, industries$mean_r, xlim=c(0,.1), ylim = c(0,.016))
+plot(efficient_frontier$sd, efficient_frontier$ret, type = "l", col = "red")
+lines(industries$i_sd, industries$mean_r)
+
+first_plot <- ggplot(data = efficient_frontier, aes(x = sd, y = ret)) + 
+              geom_point(color="firebrick") + 
+              geom_point(aes(x=i_sd, y = mean_r), data = industries, color="blue")
 
 #Question 1B
-industry_sd <- sapply(as.list(as.data.frame(industry_returns)), sd)
+industry_sd <- industry_sd1 / sqrt(1069)
 mean_return_inc <- mean_return2 + industry_sd
 tan_weights2 <- (v_inv %*% mean_return_inc) / (as.vector(t(one_v) %*% v_inv %*% mean_return_inc))
 
 tan_return2 <- (mean_return + industry_sd) %*% tan_weights2
 tan_sd2 <- (t(tan_weights2) %*% vcov_mat %*% tan_weights2)^(1/2)
+
+mvp_return2 <-  (mean_return + industry_sd) %*% mvp_weights
 
 monthly_mvp2 <- industry_returns %*% mvp_weights
 monthly_tan2 <- industry_returns %*% tan_weights2
@@ -55,12 +68,17 @@ weights <- seq(-5, 5, .01)
 efficient_frontier2 <- data.frame(ret = numeric(), sd = numeric())
 for (w in weights){
   multi_sd <- (w^2 * mvp_sd^2 + (1-w)^2 * tan_sd2^2 + 2*w*(1-w)*cov_two_port)^(1/2)
-  multi_return <- w*mvp_return + (1-w)*tan_return2
+  multi_return <- w*mvp_return2 + (1-w)*tan_return2
   temp = data.frame(ret = multi_return, sd = multi_sd)
   efficient_frontier2 <- rbind(efficient_frontier2, temp)
 }
-plot(efficient_frontier2$sd, efficient_frontier2$ret, type = "l")
-abline(efficient_frontier$sd, efficient_frontier$ret)
+plot(efficient_frontier2$sd, efficient_frontier2$ret, type = "l", col="blue")
+abline(efficient_frontier$sd, efficient_frontier$ret, col = "red")
+
+second_plot <- ggplot(data = efficient_frontier, aes(x = sd, y = ret)) + 
+              geom_point(color="firebrick") + 
+              geom_point(aes(x=i_sd, y = mean_r), data = industries, color="blue") +
+              geom_point(aes(x=sd, y=ret), data=efficient_frontier2, color = "pink")
 
 #Question 1C
 var_only_mat <- vcov_mat
