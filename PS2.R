@@ -1,5 +1,4 @@
 library(readr)
-library(moments)
 library(MASS)
 setwd("~/Applied_Quant_Finance")
 rm(list=ls())
