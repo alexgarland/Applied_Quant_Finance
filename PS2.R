@@ -100,7 +100,6 @@ for (w in weights){
   temp = data.frame(ret = multi_return, sd = multi_sd)
   efficient_frontier3 <- rbind(efficient_frontier3, temp)
 }
-plot(efficient_frontier3$sd, efficient_frontier3$ret, type = "l")
 
 third_plot <- ggplot(data = efficient_frontier, aes(x = sd, y = ret)) + 
               geom_point(color="firebrick") + 
