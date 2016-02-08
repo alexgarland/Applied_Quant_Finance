@@ -95,7 +95,7 @@ cov_two_port3 <- cov(monthly_mvp3, monthly_tan3)
 weights <- seq(-5, 5, .01)
 efficient_frontier3 <- data.frame(ret = numeric(), sd = numeric())
 for (w in weights){
-  multi_sd <- (w^2 * mvp_sd3^2 + (1-w)^2 * tan_sd3^2 + 2*w*(1-w)*cov_two_port3)^(1/2)
+  multi_sd <- (w^2 * mvp_sd3^2 + (1-w)^2 * tan_sd3^2 + 2*w*(1-w)*cov_two_port3)^(1/2) 
   multi_return <- w*mvp_return3 + (1-w)*tan_return3
   temp = data.frame(ret = multi_return, sd = multi_sd)
   efficient_frontier3 <- rbind(efficient_frontier3, temp)
