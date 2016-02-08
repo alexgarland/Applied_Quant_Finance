@@ -42,10 +42,6 @@ industry_sd1 <- sapply(as.list(as.data.frame(industry_returns)), sd)
 
 industries <- data.frame(mean_r = mean_return, i_sd = industry_sd1)
 
-plot(industries$i_sd, industries$mean_r, xlim=c(0,.1), ylim = c(0,.016))
-plot(efficient_frontier$sd, efficient_frontier$ret, type = "l", col = "red")
-lines(industries$i_sd, industries$mean_r)
-
 first_plot <- ggplot(data = efficient_frontier, aes(x = sd, y = ret)) + 
               geom_point(color="firebrick") + 
               geom_point(aes(x=i_sd, y = mean_r), data = industries, color="blue")
@@ -72,8 +68,6 @@ for (w in weights){
   temp = data.frame(ret = multi_return, sd = multi_sd)
   efficient_frontier2 <- rbind(efficient_frontier2, temp)
 }
-plot(efficient_frontier2$sd, efficient_frontier2$ret, type = "l", col="blue")
-abline(efficient_frontier$sd, efficient_frontier$ret, col = "red")
 
 second_plot <- ggplot(data = efficient_frontier, aes(x = sd, y = ret)) + 
               geom_point(color="firebrick") + 
@@ -108,13 +102,20 @@ for (w in weights){
 }
 plot(efficient_frontier3$sd, efficient_frontier3$ret, type = "l")
 
-#FINISH THIS PART
+third_plot <- ggplot(data = efficient_frontier, aes(x = sd, y = ret)) + 
+              geom_point(color="firebrick") + 
+              geom_point(aes(x=i_sd, y = mean_r), data = industries, color="blue") +
+              geom_point(aes(x=sd, y=ret), data=efficient_frontier2, color = "pink") +
+              geom_point(aes(x=sd, y=ret), data=efficient_frontier3, color = "green")
+
+#FQuestion 1C Continued
 
 #For Questions 1D and 1E
 num_months <- 60
 
 #Question 1D
 total_portfolio_normal <- data.frame(var_return = mvp_return, var_sd = mvp_sd, tangency_return = tan_return, tangency_sd = tan_sd)
+highest_weight1 <- numeric()
 for (i in 1:1000){
   predicted_IR <- mvrnorm(n = num_months, mu = mean_return, Sigma = vcov_mat)
   vcov_mat_p <- cov(predicted_IR)
@@ -130,14 +131,22 @@ for (i in 1:1000){
   
   mvp_sd_p <- (t(mvp_weights_p) %*% vcov_mat %*% mvp_weights_p)^(1/2)
   tan_sd_p <- (t(tan_weights_p) %*% vcov_mat %*% tan_weights_p)^(1/2)
+  
+  highest_weight1 <- c(highest_weight1, max(tan_weights_p))
   temp <- data.frame(var_return = mvp_return_p, var_sd = mvp_sd_p, tangency_return = tan_return_p, tangency_sd = tan_sd_p)
   total_portfolio_normal <- rbind(total_portfolio_normal, temp)
 }
 
-plot(total_portfolio_normal$var_sd, total_portfolio_normal$var_return)
-plot(total_portfolio_normal$tangency_sd, total_portfolio_normal$tangency_return)
+fourth_plot <- ggplot(data = total_portfolio_normal, aes(x=var_sd, y=var_return)) +
+               geom_point(color = "firebrick")
+fifth_plot <- ggplot(data = total_portfolio_normal, aes(x=tangency_sd, y=tangency_return)) +
+              geom_point(color = "firebrick")
+sixth_plot <- ggplot(data = total_portfolio_normal, aes(x=tangency_sd, y=tangency_return)) +
+              geom_point(color = "firebrick") + xlim(0,1) + ylim(0, .05)
+
 
 #Question 1E
+highest_weight2 <- numeric()
 total_portfolio_boot <- data.frame(var_return = mvp_return, var_sd = mvp_sd, tangency_return = tan_return, tangency_sd = tan_sd)
 for (i in 1:1000){
   indices <- sample(1:1069, num_months)
@@ -155,9 +164,15 @@ for (i in 1:1000){
   
   mvp_sd_p <- (t(mvp_weights_p) %*% vcov_mat %*% mvp_weights_p)^(1/2)
   tan_sd_p <- (t(tan_weights_p) %*% vcov_mat %*% tan_weights_p)^(1/2)
+  
+  highest_weight2 <- c(highest_weight2, max(tan_weights_p))
   temp <- data.frame(var_return = mvp_return_p, var_sd = mvp_sd_p, tangency_return = tan_return_p, tangency_sd = tan_sd_p)
   total_portfolio_boot <- rbind(total_portfolio_boot, temp)
 }
 
-plot(total_portfolio_boot$var_sd, total_portfolio_boot$var_return)
-plot(total_portfolio_boot$tangency_sd, total_portfolio_boot$tangency_return)
+seventh_plot <- ggplot(data = total_portfolio_boot, aes(x=var_sd, y=var_return)) +
+                geom_point(color = "firebrick")
+eigth_plot <- ggplot(data = total_portfolio_boot, aes(x=tangency_sd, y=tangency_return)) +
+              geom_point(color = "firebrick")
+ninth_plot <- ggplot(data = total_portfolio_boot, aes(x=tangency_sd, y=tangency_return)) +
+              geom_point(color = "firebrick") + xlim(0,.5) + ylim(-.025, .025)
