@@ -27,7 +27,7 @@ tan_sd <- (t(tan_weights) %*% vcov_mat %*% tan_weights)^(1/2)
 
 monthly_mvp <- industry_returns %*% mvp_weights
 monthly_tan <- industry_returns %*% tan_weights
-cov_two_port <- cov(monthly_mvp, monthly_tan)
+cov_two_port <- t(tan_weights) %*% vcov_mat %*% mvp_weights
 
 weights <- seq(-5, 5, .01)
 efficient_frontier <- data.frame(ret = numeric(), sd = numeric())
@@ -58,12 +58,12 @@ mvp_return2 <-  (mean_return + industry_sd) %*% mvp_weights
 
 monthly_mvp2 <- industry_returns %*% mvp_weights
 monthly_tan2 <- industry_returns %*% tan_weights2
-cov_two_port <- cov(monthly_mvp2, monthly_tan2)
+cov_two_port2 <- t(tan_weights2) %*% vcov_mat %*% mvp_weights
 
 weights <- seq(-5, 5, .01)
 efficient_frontier2 <- data.frame(ret = numeric(), sd = numeric())
 for (w in weights){
-  multi_sd <- (w^2 * mvp_sd^2 + (1-w)^2 * tan_sd2^2 + 2*w*(1-w)*cov_two_port)^(1/2)
+  multi_sd <- (w^2 * mvp_sd^2 + (1-w)^2 * tan_sd2^2 + 2*w*(1-w)*cov_two_port2)^(1/2)
   multi_return <- w*mvp_return2 + (1-w)*tan_return2
   temp = data.frame(ret = multi_return, sd = multi_sd)
   efficient_frontier2 <- rbind(efficient_frontier2, temp)
@@ -90,12 +90,12 @@ mvp_sd3 <- (t(mvp_weights3) %*% var_only_mat %*% mvp_weights3)^(1/2)
 
 monthly_mvp3 <- industry_returns %*% mvp_weights3
 monthly_tan3 <- industry_returns %*% tan_weights3
-cov_two_port3 <- cov(monthly_mvp3, monthly_tan3)
+cov_two_port3 <- t(tan_weights3) %*% var_only_mat %*% mvp_weights3
 
 weights <- seq(-5, 5, .01)
 efficient_frontier3 <- data.frame(ret = numeric(), sd = numeric())
 for (w in weights){
-  multi_sd <- (w^2 * mvp_sd3^2 + (1-w)^2 * tan_sd3^2 + 2*w*(1-w)*cov_two_port3)^(1/2) 
+  multi_sd <- (w^2 * mvp_sd3^2 + (1-w)^2 * tan_sd3^2 + 2*w*(1-w)*cov_two_port3 )^(1/2) 
   multi_return <- w*mvp_return3 + (1-w)*tan_return3
   temp = data.frame(ret = multi_return, sd = multi_sd)
   efficient_frontier3 <- rbind(efficient_frontier3, temp)
@@ -107,7 +107,34 @@ third_plot <- ggplot(data = efficient_frontier, aes(x = sd, y = ret)) +
               geom_point(aes(x=sd, y=ret), data=efficient_frontier2, color = "pink") +
               geom_point(aes(x=sd, y=ret), data=efficient_frontier3, color = "green")
 
-#FQuestion 1C Continued
+#Question 1C Continued
+new_cov <- diag(10)
+
+tan_weights4 <- (v_only_inv %*% mean_return2) / (as.vector(t(one_v) %*% new_cov %*% 
+                                                             mean_return2))
+tan_return4 <- mean_return %*% tan_weights4
+tan_sd4 <- (t(tan_weights4) %*% new_cov %*% tan_weights4)^(1/2)
+
+mvp_weights4 <- (v_only_inv %*% one_v) / as.vector((t(one_v) %*% new_cov %*% one_v))
+mvp_return4 <- mean_return %*% mvp_weights4
+mvp_sd4 <- (t(mvp_weights4) %*% new_cov %*% mvp_weights4)^(1/2)
+
+monthly_mvp4 <- industry_returns %*% mvp_weights4
+monthly_tan4 <- industry_returns %*% tan_weights4
+cov_two_port4 <- t(tan_weights4) %*% new_cov %*% mvp_weights4
+
+weights <- seq(-5, 5, .01)
+efficient_frontier4 <- data.frame(ret = numeric(), sd = numeric())
+for (w in weights){
+  multi_sd <- (w^2 * mvp_sd4^2 + (1-w)^2 * tan_sd4^2 + 2*w*(1-w)*cov_two_port4)^(1/2) 
+  multi_return <- w*mvp_return4 + (1-w)*tan_return4
+  temp = data.frame(ret = multi_return, sd = multi_sd)
+  efficient_frontier4 <- rbind(efficient_frontier4, temp)
+}
+
+third_plot_2 <- ggplot(data = efficient_frontier3, aes(x = sd, y = ret)) + 
+                geom_point(color="green") + 
+                geom_point(aes(x=sd, y = ret), data = efficient_frontier4, color="black")
 
 #For Questions 1D and 1E
 num_months <- 60
