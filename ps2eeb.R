@@ -31,6 +31,7 @@ tan_sd <- (t(tan_weights) %*% v %*% tan_weights)^(1/2)
 
 monthly_mvp <- portfolio %*% mvp_weights
 monthly_tan <- portfolio %*% tan_weights
+cov_two_port <- t(mvp_weights) %*% v %*% tan_weights
 cov_two_port <- cov(monthly_mvp, monthly_tan)
 
 weights <- seq(-5, 5, .01)
@@ -93,7 +94,8 @@ tan_sd <- (t(tan_weights) %*% v_diag %*% tan_weights)^(1/2)
 
 monthly_mvp <- portfolio %*% mvp_weights
 monthly_tan <- portfolio %*% tan_weights
-cov_two_port <- cov(monthly_mvp, monthly_tan)
+cov_two_port <- t(mvp_weights) %*% v_diag %*% tan_weights
+#cov_two_port <- cov(monthly_mvp, monthly_tan)
 
 weights <- seq(-5, 5, .01)
 efficient_frontier_diag <- data.frame(ret = numeric(), sd = numeric())
