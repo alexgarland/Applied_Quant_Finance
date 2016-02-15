@@ -61,8 +61,23 @@ plot(beta, average_returns)
 plot(b, average_returns)
 
 #1e
+gamma0_e <- 1 : 1069
+gammaM_e <- 1 : 1069
+gammaS_e <- 1 : 1069
+gammaB_e <- 1 : 1069
+eta_e <- 1 : 1069
+be_me_curr <- be_me[1,]
 for(i in 1 : 1069) {
-  if(i-1 %% 12 == 1) {
-    lm(vw_returns[,i] ~ market_proxy[,1] + firm_size[,i] + be_me[,i])
+  if(i > 1 && i-1 %% 12 == 0) {
+    be_me_curr <- be_me[(i-1)/12,]
   }
+  m3 <- lm(vw_returns[i,] ~ b + log(firm_size[i,]) + log(be_me_curr))
+  gamma0_e[i] <- coefficients(m3)[1]
+  gammaM_e[i] <- coefficients(m3)[2]
+  gammaS_e[i] <- coefficients(m3)[3]
+  gammaB_e[i] <- coefficients(m3)[4]
 }
+gamma0_e <- mean(gamma0_e)
+gammaM_e <- mean(gammaM_e)
+gammaS_e <- mean(gammaS_e)
+gammaB_e <- mean(gammaB_e)
