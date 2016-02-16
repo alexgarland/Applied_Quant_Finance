@@ -106,3 +106,97 @@ g_z_mean2 <- mean(gam_zero_vector2)
 g_o_mean2 <- mean(gam_one_vector2)
 g_size_mean2 <- mean(gam_size_vector2)
 g_beme_mean2 <- mean(gam_beme_vector2)
+
+
+#2B
+raw_portfolio <- read_csv("PS3_Custom_Returns.csv")
+raw_portfolio <- raw_portfolio / 100
+raw_portfolio[raw_portfolio <= -.99] <- NA
+
+port_beta_vector <- as.numeric()
+for (i in 2:26){
+  temp <- data.frame(Date = raw_portfolio$Date, portfolio = raw_portfolio[,i])
+  merged_temp <- merge(temp, raw_market, by="Date")
+  merged_temp <- subset(merged_temp, !is.na(merged_temp$portfolio))
+  beta <- cov(merged_temp$portfolio, merged_temp$excess)/var(merged_temp$excess)
+  port_beta_vector <- c(port_beta_vector, beta)
+}
+
+port_gam_zero_vector = c()
+port_gam_one_vector = c()
+for (i in 1:1073){
+  returns_vector <- t(as.matrix(raw_portfolio[i,2:26]))
+  reg_df <- data.frame(returns = returns_vector[,1], betas = port_beta_vector)
+  reg_df <- subset(reg_df, !is.na(reg_df$returns))
+  model <- lm(returns ~ betas, data = reg_df)
+  gamma_zero <- coef(summary(model))[1,1]
+  port_gam_zero_vector <- c(gam_zero_vector, gamma_zero)
+  gamma_one <- coef(summary(model))[2,1]
+  port_gam_one_vector <- c(gam_one_vector, gamma_one)
+}
+
+port_gam_zero_mean <- mean(port_gam_zero_vector)
+port_gam_one_mean <- mean(port_gam_one_vector)
+
+port_gz_st_err <- sd(port_gam_zero_vector) / sqrt(1069)
+port_go_st_err <- sd(port_gam_one_vector) / sqrt(1069)
+
+port_gz_t <- port_gam_zero_mean / port_gz_st_err
+port_go_t <- port_gam_one_mean / port_go_st_err
+
+#2C
+avg_port_rtn <- sapply(raw_portfolio[,2:26], mean, na.rm=TRUE)
+model <- lm(avg_port_rtn ~ port_beta_vector)
+port_coef_vector <- c(coef(summary(model))[1,1], coef(summary(model))[2,1])
+port_st_err_vector <- c(coef(summary(model))[1,2], coef(summary(model))[2,2])
+
+#2D
+plot_port_df = data.frame(returns = avg_port_rtn, beta = port_beta_vector)
+second_plot <- ggplot(data = plot_port_df, aes(x = beta, y = returns)) + 
+               geom_point(color = "firebrick") +
+               geom_abline(slope = port_coef_vector[2], intercept = port_coef_vector[1], color = "blue")
+#2F
+portfolio_size <- read_csv("PS3_Custom_Size.csv")
+portfolio_beme <- read_csv("PS3_Custom_BEME.csv")
+portfolio_size[portfolio_size <= -.99] <- NA
+portfolio_beme[portfolio_beme <= -.99] <- NA
+expanded_beme <- portfolio_beme[1,]
+for (i in 1:90){
+  for (j in 1:12){
+    expanded_beme <- rbind(expanded_beme, portfolio_beme[i,])
+  }
+}
+expanded_beme <- expanded_beme[8:1081,1:25]
+
+gam_zero_vector2 = c()
+gam_one_vector2 = c()
+gam_size_vector2 = c()
+gam_beme_vector2 = c()
+
+for (i in 13:1069){
+  returns_vector <- t(as.matrix(raw_industry[i,2:50]))
+  beme_vector <- t(as.matrix(expanded_beme[(i-12), 2:50]))
+  size_vector <- t(as.matrix(industry_size[(i-1), 2:50]))
+  
+  reg_df <- data.frame(returns = returns_vector[,1], betas = beta_vector, known_size = size_vector[,1], beme = beme_vector[,1])
+  reg_df <- subset(reg_df, !is.na(reg_df$returns))
+  reg_df <- subset(reg_df, !is.na(reg_df$known_size))
+  reg_df <- subset(reg_df, !is.na(reg_df$beme))
+  
+  model <- lm(returns ~ betas + log(known_size) + log(beme), data = reg_df)
+  
+  gamma_zero <- coef(summary(model))[1,1]
+  gam_zero_vector2 <- c(gam_zero_vector2, gamma_zero)
+  gamma_one <- coef(summary(model))[2,1]
+  gam_one_vector2 <- c(gam_one_vector2, gamma_one)
+  gamma_size <- coef(summary(model))[3,1]
+  gam_size_vector2 <- c(gam_size_vector2, gamma_size)
+  gamma_beme <- coef(summary(model))[4,1]
+  gam_beme_vector2 <- c(gam_beme_vector2, gamma_beme)
+}
+
+g_z_mean2 <- mean(gam_zero_vector2)
+g_o_mean2 <- mean(gam_one_vector2)
+g_size_mean2 <- mean(gam_size_vector2)
+g_beme_mean2 <- mean(gam_beme_vector2)
+
