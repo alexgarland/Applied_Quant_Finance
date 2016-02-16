@@ -65,22 +65,44 @@ first_plot <- ggplot(data = plot_df, aes(x = beta, y = returns)) +
 industry_size <- read_csv("PS3_Industry_Size.csv")
 industry_beme <- read_csv("PS3_Industry_BEME.csv")
 industry_size[industry_size <= -.99] <- NA
+industry_beme[industry_beme <= -.99] <- NA
+expanded_beme <- industry_beme[1,]
+for (i in 1:90){
+  for (j in 1:12){
+    expanded_beme <- rbind(expanded_beme, industry_beme[i,])
+  }
+}
+expanded_beme <- expanded_beme[8:1081,1:50]
+expanded_beme <- expanded_beme[1:1069, 1:50]
 
 gam_zero_vector2 = c()
 gam_one_vector2 = c()
 gam_size_vector2 = c()
-for (i in 2:1069){
+gam_beme_vector2 = c()
+
+for (i in 13:1069){
   returns_vector <- t(as.matrix(raw_industry[i,2:50]))
+  beme_vector <- t(as.matrix(expanded_beme[(i-12), 2:50]))
   size_vector <- t(as.matrix(industry_size[(i-1), 2:50]))
-  reg_df <- data.frame(returns = returns_vector[,1], betas = beta_vector, known_size = size_vector[,1])
+  
+  reg_df <- data.frame(returns = returns_vector[,1], betas = beta_vector, known_size = size_vector[,1], beme = beme_vector[,1])
   reg_df <- subset(reg_df, !is.na(reg_df$returns))
   reg_df <- subset(reg_df, !is.na(reg_df$known_size))
-  model <- lm(returns ~ betas + log(known_size), data = reg_df)
+  reg_df <- subset(reg_df, !is.na(reg_df$beme))
+  
+  model <- lm(returns ~ betas + log(known_size) + log(beme), data = reg_df)
+  
   gamma_zero <- coef(summary(model))[1,1]
   gam_zero_vector2 <- c(gam_zero_vector2, gamma_zero)
   gamma_one <- coef(summary(model))[2,1]
   gam_one_vector2 <- c(gam_one_vector2, gamma_one)
   gamma_size <- coef(summary(model))[3,1]
   gam_size_vector2 <- c(gam_size_vector2, gamma_size)
-  
+  gamma_beme <- coef(summary(model))[4,1]
+  gam_beme_vector2 <- c(gam_beme_vector2, gamma_beme)
 }
+
+g_z_mean2 <- mean(gam_zero_vector2)
+g_o_mean2 <- mean(gam_one_vector2)
+g_size_mean2 <- mean(gam_size_vector2)
+g_beme_mean2 <- mean(gam_beme_vector2)
