@@ -1,5 +1,6 @@
 library(readr)
 library(ggplot2)
+library(MASS)
 
 setwd("~/Applied_Quant_Finance")
 rm(list=ls())
@@ -166,19 +167,19 @@ for (i in 1:90){
     expanded_beme <- rbind(expanded_beme, portfolio_beme[i,])
   }
 }
-expanded_beme <- expanded_beme[8:1081,1:25]
+expanded_beme <- expanded_beme[8:1081,1:26]
 
-gam_zero_vector2 = c()
-gam_one_vector2 = c()
-gam_size_vector2 = c()
-gam_beme_vector2 = c()
+port_gam_zero_vector2 = c()
+port_gam_one_vector2 = c()
+port_gam_size_vector2 = c()
+port_gam_beme_vector2 = c()
 
 for (i in 13:1069){
-  returns_vector <- t(as.matrix(raw_industry[i,2:50]))
-  beme_vector <- t(as.matrix(expanded_beme[(i-12), 2:50]))
-  size_vector <- t(as.matrix(industry_size[(i-1), 2:50]))
+  returns_vector <- t(as.matrix(raw_portfolio[i,2:26]))
+  beme_vector <- t(as.matrix(expanded_beme[(i-12), 2:26]))
+  size_vector <- t(as.matrix(industry_size[(i-1), 2:26]))
   
-  reg_df <- data.frame(returns = returns_vector[,1], betas = beta_vector, known_size = size_vector[,1], beme = beme_vector[,1])
+  reg_df <- data.frame(returns = returns_vector[,1], betas = port_beta_vector, known_size = size_vector[,1], beme = beme_vector[,1])
   reg_df <- subset(reg_df, !is.na(reg_df$returns))
   reg_df <- subset(reg_df, !is.na(reg_df$known_size))
   reg_df <- subset(reg_df, !is.na(reg_df$beme))
@@ -186,17 +187,49 @@ for (i in 13:1069){
   model <- lm(returns ~ betas + log(known_size) + log(beme), data = reg_df)
   
   gamma_zero <- coef(summary(model))[1,1]
-  gam_zero_vector2 <- c(gam_zero_vector2, gamma_zero)
+  port_gam_zero_vector2 <- c(port_gam_zero_vector2, gamma_zero)
   gamma_one <- coef(summary(model))[2,1]
-  gam_one_vector2 <- c(gam_one_vector2, gamma_one)
+  port_gam_one_vector2 <- c(port_gam_one_vector2, gamma_one)
   gamma_size <- coef(summary(model))[3,1]
-  gam_size_vector2 <- c(gam_size_vector2, gamma_size)
+  port_gam_size_vector2 <- c(port_gam_size_vector2, gamma_size)
   gamma_beme <- coef(summary(model))[4,1]
-  gam_beme_vector2 <- c(gam_beme_vector2, gamma_beme)
+  port_gam_beme_vector2 <- c(port_gam_beme_vector2, gamma_beme)
 }
 
-g_z_mean2 <- mean(gam_zero_vector2)
-g_o_mean2 <- mean(gam_one_vector2)
-g_size_mean2 <- mean(gam_size_vector2)
-g_beme_mean2 <- mean(gam_beme_vector2)
+port_g_z_mean2 <- mean(port_gam_zero_vector2)
+port_g_o_mean2 <- mean(port_gam_one_vector2)
+port_g_size_mean2 <- mean(port_gam_size_vector2)
+port_g_beme_mean2 <- mean(port_gam_beme_vector2)
+
+#2C with tangency portfolio
+vcov_mat = cov(raw_portfolio[2:26])
+v_inv = ginv(vcov_mat)
+avg_port_rtn2 = avg_port_rtn - rf_return
+one_v = rep(1, 25)
+tan_weights <- (v_inv %*% avg_port_rtn2) / (as.vector(t(one_v) %*% v_inv %*% avg_port_rtn2))
+
+port_returns <- as.matrix(raw_portfolio[2:26])
+tan_return <- as.data.frame(port_returns %*% tan_weights)
+tan_return$Date = raw_portfolio$Date
+
+tan_beta_vector <- as.numeric()
+for (i in 2:26){
+  temp <- data.frame(Date = raw_portfolio$Date, portfolio = raw_portfolio[,i])
+  merged_temp <- merge(temp, tan_return, by="Date")
+  merged_temp <- subset(merged_temp, !is.na(merged_temp$portfolio))
+  weight_holder = rep(0, 25)
+  weight_holder[(i-1)] = 1
+  beta <- cov(merged_temp$portfolio, merged_temp$V1)/var(merged_temp$V1)
+  tan_beta_vector <- c(tan_beta_vector, beta)
+}
+
+model <- lm(avg_port_rtn ~ tan_beta_vector)
+tan_coef_vector <- c(coef(summary(model))[1,1], coef(summary(model))[2,1])
+tan_st_err_vector <- c(coef(summary(model))[1,2], coef(summary(model))[2,2])
+
+#2D with Tangency
+plot_tan_df = data.frame(returns = avg_port_rtn, beta = tan_beta_vector)
+third_plot <- ggplot(data = plot_tan_df, aes(x = beta, y = returns)) + 
+              geom_point(color = "firebrick") +
+              geom_abline(slope = tan_coef_vector[2], intercept = tan_coef_vector[1], color = "blue")
 
