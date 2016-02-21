@@ -233,3 +233,66 @@ third_plot <- ggplot(data = plot_tan_df, aes(x = beta, y = returns)) +
               geom_point(color = "firebrick") +
               geom_abline(slope = tan_coef_vector[2], intercept = tan_coef_vector[1], color = "blue")
 
+#2C with training set
+even_years <- subset(raw_portfolio, as.integer(raw_portfolio$Date) %% 2 == 0) 
+odd_years <- subset(raw_portfolio, as.integer(raw_portfolio$Date) %% 2 == 1)
+
+even_training <- subset(even_years, as.integer(even_years$Date * 100) %% 2 == 1)
+even_test <- subset(even_years, as.integer(even_years$Date * 100) %% 2 == 0)
+odd_training <- subset(odd_years, as.integer(odd_years$Date * 100) %% 2 == 0)
+odd_test <- subset(odd_years, as.integer(odd_years$Date * 100) %% 2 == 1)
+
+training_df <- rbind(even_training, odd_training)
+test_df <- rbind(even_test, odd_test)
+
+vcov_mat2 = cov(training_df[2:26])
+v_inv2 = ginv(vcov_mat2)
+training_ret = as.matrix(training_df[,2:26])
+avg_train_rtn <- sapply(training_df[,2:26], mean, na.rm=TRUE)
+avg_train_rtn2 <- avg_train_rtn - rf_return
+tan_weights2 <- (v_inv2 %*% avg_train_rtn2) / (as.vector(t(one_v) %*% v_inv2 %*% avg_train_rtn2))
+
+vcov_mat3 = cov(test_df[2:26])
+v_inv3 = ginv(vcov_mat3)
+test_ret <- as.matrix(test_df[,2:26])
+avg_test_rtn <- sapply(test_df[,2:26], mean, na.rm=TRUE)
+avg_test_rtn2 <- avg_test_rtn - rf_return
+tan_weights3 <- (v_inv2 %*% avg_test_rtn2) / (as.vector(t(one_v) %*% v_inv3 %*% avg_test_rtn2))
+
+first_half_of_returns <- test_ret %*% tan_weights2
+second_half <- training_ret %*% tan_weights3
+
+total_ret <- as.numeric()
+for (i in 1:1073){
+  if (as.integer(raw_portfolio$Date) %% 2 == 0 && as.integer(raw_portfolio$Date * 100) %% 2 == 1){
+    holder <- port_returns[i,] %*% tan_weights3
+    total_ret <- c(total_ret, holder)
+  }
+  else if (as.integer(raw_portfolio$Date) %% 2 == 1 && as.integer(raw_portfolio$Date * 100) %% 2 == 0){
+    holder <- port_returns[i,] %*% tan_weights3
+    total_ret <- c(total_ret, holder)
+  }
+  else{
+    holder <- port_returns[i,] %*% tan_weights2
+    total_ret <- c(total_ret, holder)
+  }
+}
+
+tan_beta_vector2 <- as.numeric()
+for (i in 2:26){
+  temp <- data.frame(Date = raw_portfolio$Date, portfolio = raw_portfolio[,i])
+  merged_temp <- temp
+  merged_temp$V1 <- total_ret
+  merged_temp <- subset(merged_temp, !is.na(merged_temp$portfolio))
+  beta <- cov(merged_temp$portfolio, merged_temp$V1)/var(merged_temp$V1)
+  tan_beta_vector2 <- c(tan_beta_vector2, beta)
+}
+
+model <- lm(avg_port_rtn ~ tan_beta_vector2)
+tan_coef_vector2 <- c(coef(summary(model))[1,1], coef(summary(model))[2,1])
+tan_st_err_vector2 <- c(coef(summary(model))[1,2], coef(summary(model))[2,2])
+
+plot_tan_df2 = data.frame(returns = avg_port_rtn, beta = tan_beta_vector2)
+fourth_plot <- ggplot(data = plot_tan_df2, aes(x = beta, y = returns)) + 
+               geom_point(color = "firebrick") +
+               geom_abline(slope = tan_coef_vector2[2], intercept = tan_coef_vector2[1], color = "blue")
