@@ -200,3 +200,6 @@ obs <- 1063
 N <- 25
 F_stat7 <- obs * (obs - N - 1) * test_stat7 / (N * (obs - 2))
 p_val7 <- pf(F_stat7, N, obs-N-1, 0, lower.tail = FALSE)
+
+returns_df <- data.frame(tan_ind = ind_tan_returns[7:1069], tan_pp = pp_tan_returns, tan_beme = tan_excess_return[7:1069])
+cov_returns <- cov(returns_df)
