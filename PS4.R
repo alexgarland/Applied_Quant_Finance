@@ -173,3 +173,30 @@ p_val5 <- pf(F_stat5, N, obs-N-1, 0, lower.tail = FALSE)
 one_v <- rep(1, 30)
 industry_tan <- (v_inv %*% (mean_industry - mean_rf)) / (as.vector(t(one_v) %*% v_inv %*% (mean_industry - mean_rf)))
 ind_tan_returns <- excess_returns_arr %*% industry_tan
+
+model_list6 <- lm(excess_returns_arr3[1:1069,] ~ ind_tan_returns)
+intercepts6 <- model_list6$coefficients[1,]
+
+tan_sharpe3 <- mean(ind_tan_returns) / sd(ind_tan_returns)
+
+test_stat6 <- (t(intercepts6) %*% v_inv3 %*% intercepts6) / (1+tan_sharpe3^2)
+obs <- 1069
+N <- 25
+F_stat6 <- obs * (obs - N - 1) * test_stat6 / (N * (obs - 2))
+p_val6 <- pf(F_stat6, N, obs-N-1, 0, lower.tail = FALSE)
+
+#Question 3j
+one_v <- rep(1, 10)
+pastperf_tan <- (v_inv2 %*% (mean_pastperf- mean_rf)) / (as.vector(t(one_v) %*% v_inv2 %*% (mean_pastperf - mean_rf)))
+pp_tan_returns <- excess_returns_arr2 %*% pastperf_tan
+
+model_list7 <- lm(excess_returns_arr3[7:1069,] ~ pp_tan_returns)
+intercepts7 <- model_list6$coefficients[1,]
+
+tan_sharpe4 <- mean(pp_tan_returns) / sd(pp_tan_returns)
+
+test_stat7 <- (t(intercepts7) %*% v_inv3 %*% intercepts7) / (1+tan_sharpe4^2)
+obs <- 1063
+N <- 25
+F_stat7 <- obs * (obs - N - 1) * test_stat7 / (N * (obs - 2))
+p_val7 <- pf(F_stat7, N, obs-N-1, 0, lower.tail = FALSE)
