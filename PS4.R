@@ -83,7 +83,9 @@ sd_beme <- apply(beme_port, 2, sd)[2:26]
 sharpe_beme <- (mean_beme - mean_rf) / sd_beme
 
 excess_returns_arr3 <- apply(beme_port, 2, excess_returns)
+#excess_returns_arr3 <- beme_port - mean_rf
 excess_returns_arr3 <- excess_returns_arr3[,2:26]
+#excess_returns_arr3 <- as.matrix(excess_returns_arr3)
 
 model_list3 <- lm(excess_returns_arr3 ~ market_returns$`RM-RF`)
 intercepts3 <- model_list3$coefficients[1,]
@@ -201,5 +203,6 @@ N <- 25
 F_stat7 <- obs * (obs - N - 1) * test_stat7 / (N * (obs - 2))
 p_val7 <- pf(F_stat7, N, obs-N-1, 0, lower.tail = FALSE)
 
+#Question 3k
 returns_df <- data.frame(tan_ind = ind_tan_returns[7:1069], tan_pp = pp_tan_returns, tan_beme = tan_excess_return[7:1069])
 cov_returns <- cov(returns_df)
