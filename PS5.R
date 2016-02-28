@@ -230,11 +230,64 @@ mom_avg_1 <- apply(mom_gammas1, 2, mean)
 mom_avg_2 <- apply(mom_gammas2, 2, mean)
 mom_avg_3 <- apply(mom_gammas3, 2, mean)
 
-mom_std_1 <- apply(mom_gammas1, 2, sd)
-mom_std_2 <- apply(mom_gammas2, 2, sd)
-mom_std_3 <- apply(mom_gammas3, 2, sd)
+mom_std_1 <- apply(mom_gammas1, 2, sd) / sqrt(1059)
+mom_std_2 <- apply(mom_gammas2, 2, sd) / sqrt(1059)
+mom_std_3 <- apply(mom_gammas3, 2, sd) / sqrt(1059)
 
 mom_t_1 <- mom_avg_1 / mom_std_1
 mom_t_2 <- mom_avg_2 / mom_std_2
 mom_t_3 <- mom_avg_3 / mom_std_3
 
+#Question H 
+mom_gammas1_2 <- data.frame(gamma_zero = as.numeric(), gamma_mkt = as.numeric(), 
+                          gamma_size = as.numeric(), gamma_ret212 = as.numeric())
+
+mom_gammas2_2 <- data.frame(gamma_zero = as.numeric(), gamma_mkt = as.numeric(), 
+                          gamma_smb = as.numeric(), gamma_umd = as.numeric())
+
+mom_gammas3_2 <- data.frame(gamma_zero = as.numeric(), gamma_mkt = as.numeric(),
+                          gamma_smb = as.numeric(), gamma_umd = as.numeric(),
+                          gamma_size = as.numeric(), gamma_ret212 = as.numeric())
+
+for(i in 439:1069){
+  #Screen out NAs
+  if (rowSums(is.na(momentum_portfolio_size[i,2:26])) > 0){
+    next
+  }
+  #Estimate the gammas
+  model1 <- lm(array_mom[i,] ~ mom_port_betas$Beta1 + log(as.vector(as.matrix(momentum_portfolio_size[i,2:26]))) + 
+                 as.vector(as.matrix(momentum_portfolio_momentum[i,2:26])))
+  
+  model2 <- lm(array_mom[i,] ~ mom_port_betas$Beta1 + mom_port_betas$Beta2 + mom_port_betas$Beta3)
+  
+  model3 <- lm(array_mom[i,] ~ mom_port_betas$Beta1 + log(as.vector(as.matrix(momentum_portfolio_size[i,2:26]))) + 
+                 as.vector(as.matrix(momentum_portfolio_momentum[i,2:26])) + mom_port_betas$Beta2 + 
+                 mom_port_betas$Beta3)
+  
+  #Store them in the temporary dfs
+  temp1 <- data.frame(gamma_zero = coef(model1)[1], gamma_mkt = coef(model1)[2], 
+                      gamma_size = coef(model1)[3], gamma_mom = coef(model1)[4])
+  
+  temp2 <- data.frame(gamma_zero = coef(model2)[1], gamma_mkt = coef(model2)[2], 
+                      gamma_smb = coef(model2)[3], gamma_umd = coef(model2)[4])
+  
+  temp3 <- data.frame(gamma_zero = coef(model3)[1], gamma_mkt = coef(model3)[2],
+                      gamma_smb = coef(model3)[5], gamma_umd = coef(model3)[6],
+                      gamma_size = coef(model3)[3], gamma_mom = coef(model3)[4])
+  
+  mom_gammas1_2 <- rbind(mom_gammas1_2, temp1)
+  mom_gammas2_2 <- rbind(mom_gammas2_2, temp2)
+  mom_gammas3_2 <- rbind(mom_gammas3_2, temp3)
+}
+
+mom_avg_1_2 <- apply(mom_gammas1_2, 2, mean)
+mom_avg_2_2 <- apply(mom_gammas2_2, 2, mean)
+mom_avg_3_2 <- apply(mom_gammas3_2, 2, mean)
+
+mom_std_1_2 <- apply(mom_gammas1_2, 2, sd) / sqrt(1069 - 439)
+mom_std_2_2 <- apply(mom_gammas2_2, 2, sd) / sqrt(1069 - 439)
+mom_std_3_2 <- apply(mom_gammas3_2, 2, sd) / sqrt(1069 - 439)
+
+mom_t_1_2 <- mom_avg_1_2 / mom_std_1_2
+mom_t_2_2 <- mom_avg_2_2 / mom_std_2_2
+mom_t_3_2 <- mom_avg_3_2 / mom_std_3_2
