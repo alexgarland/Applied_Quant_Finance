@@ -5,7 +5,7 @@ library(MASS)
 setwd("C:/Users/Emily/Documents/AppliedQuantFin")
 rm(list=ls())
 
-repmat = function(X,m,n){
+repmat = function(X,m,n){ 
   ##R equivalent of repmat (matlab)
   mx = dim(X)[1]
   nx = dim(X)[2]
