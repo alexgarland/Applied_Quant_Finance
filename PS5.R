@@ -1,6 +1,4 @@
 library(readr)
-library(ggplot2)
-library(MASS)
 
 setwd("~/Applied_Quant_Finance")
 rm(list=ls())
@@ -47,7 +45,7 @@ reg_rf <- lm(FF_Factors$RF ~ FF_Factors$`Recession indicator (1=recession, 0=non
 reg_umd <- lm(FF_Factors$UMD[7:1073] ~ FF_Factors$`Recession indicator (1=recession, 0=non-recesstion)`[7:1073])
 
 #Question B
-mean_rf <- mean(FF_Factors$`Mkt-RF`)
+mean_rf <- mean(FF_Factors$RF)
 
 beme_portfolio <- beme_portfolio - mean_rf
 momentum_portfolio <- momentum_portfolio - mean_rf
