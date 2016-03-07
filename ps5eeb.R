@@ -106,6 +106,17 @@ t_stat3 <- avg_3 / std_3
 #d)
 
 #e)
+rm(beme_gammas1, beme_gammas2, beme_gammas3)
+beme_gammas1 <- data.frame(gamma_zero = as.numeric(), gamma_mkt = as.numeric(), 
+                           gamma_size = as.numeric(), gamma_beme = as.numeric())
+
+beme_gammas2 <- data.frame(gamma_zero = as.numeric(), gamma_mkt = as.numeric(), 
+                           gamma_smb = as.numeric(), gamma_hml = as.numeric())
+
+beme_gammas3 <- data.frame(gamma_zero = as.numeric(), gamma_mkt = as.numeric(),
+                           gamma_smb = as.numeric(), gamma_hml = as.numeric(),
+                           gamma_size = as.numeric(), gamma_beme = as.numeric())
+
 for(i in 439:1073){
   #Estimate the gammas
   model1 <- lm(array_beme[i,] ~ betas$Beta1 + log(as.vector(as.matrix(size[i,2:26]))) + log(expanded_beme[i,2:26]))
@@ -146,17 +157,16 @@ vw_212 <- read_csv("ps5momvw.csv")
 vw_212[,2:26] <- vw_212[,2:26] /100
 vw_212 <- vw_212[7:1069,]
 colnames(vw_212)[1] <- "Date"
-vw_212 <- as.matrix(vw_212)
+vw_212[vw_212 <= -.99] <- NA
+vw_212 <- vw_212 - rf
 size_212 <- read.csv("ps5momsize.csv")
 size_212[,2:26] <- size_212[,2:26] /100
 size_212 <- size_212[7:1069,]
-size_212 <- as.matrix(size_212)
-
 size_212[size_212 <= -.99] <- NA
 ret_212 <- read.csv("ps5mom212.csv")
 ret_212[,2:26] <- ret_212[,2:26] / 100
 ret_212 <- ret_212[7:1069,]
-ret_212 <- as.matrix(ret_212)
+ret_212[ret_212 <= -.99] <- NA
 
 betas <- data.frame(Beta1 = as.numeric(), Beta2 = as.numeric(), Beta3 = as.numeric())
 
@@ -177,6 +187,10 @@ beme_gammas2 <- data.frame(gamma_zero = as.numeric(), gamma_mkt = as.numeric(),
 beme_gammas3 <- data.frame(gamma_zero = as.numeric(), gamma_mkt = as.numeric(),
                            gamma_smb = as.numeric(), gamma_umd = as.numeric(),
                            gamma_size = as.numeric(), gamma_212 = as.numeric())
+
+vw_212 <- as.matrix(vw_212)
+size_212 <- as.matrix(size_212)
+ret_212 <- as.matrix(ret_212)
 
 for(i in 1:1063){
   #Estimate the gammas
@@ -214,6 +228,17 @@ t_stat2_f <- avg_2_f / std_2_f
 t_stat3_f <- avg_3_f / std_3_f
 
 #h)
+rm(beme_gammas1, beme_gammas2, beme_gammas3)
+beme_gammas1 <- data.frame(gamma_zero = as.numeric(), gamma_mkt = as.numeric(), 
+                           gamma_size = as.numeric(), gamma_beme = as.numeric())
+
+beme_gammas2 <- data.frame(gamma_zero = as.numeric(), gamma_mkt = as.numeric(), 
+                           gamma_smb = as.numeric(), gamma_hml = as.numeric())
+
+beme_gammas3 <- data.frame(gamma_zero = as.numeric(), gamma_mkt = as.numeric(),
+                           gamma_smb = as.numeric(), gamma_hml = as.numeric(),
+                           gamma_size = as.numeric(), gamma_beme = as.numeric())
+
 for(i in 390:1063){
   #Estimate the gammas
   model1 <- lm(vw_212[i,2:26] ~ betas$Beta1 + log(as.vector(as.matrix(size_212[i,2:26]))) + ret_212[i,2:26])
