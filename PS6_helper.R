@@ -22,3 +22,13 @@ collapse_year <- function(entered_column){
   }
   return(twelve_returns)
 }
+
+collapse_212 <- function(entered_column){
+  n <- length(entered_column)
+  twelve_returns <- rep(NA, n)
+  for(i in 12:n){
+    temp <- 1 + entered_column[(i-11):(i-2)]
+    twelve_returns[i] <- prod(temp) - 1
+  }
+  return(twelve_returns)
+}

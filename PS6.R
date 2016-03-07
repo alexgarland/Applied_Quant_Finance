@@ -18,18 +18,7 @@ for (i in 2:1069){
   mean_worst <- c(mean_worst, mean(industry[i, worst_performers[(i-1),]]))
 }
 
-m_best <- mean(mean_best)
-m_worst <- mean(mean_worst)
-
-std_best <- sd(mean_best) / sqrt(1068)
-std_worst <- sd(mean_worst) / sqrt(1068)
-
-t_best <- m_best/ std_best
-t_worst <- m_worst/ std_worst
-
-sr_best <- t_best / sqrt(1068)
-sr_worst <- t_worst / sqrt(1068)
-
+momentum_payoff <- mean_best - mean_worst
 
 #Question B- come back to look at this
 
@@ -53,6 +42,8 @@ worst_performers_212 <- t(apply(past_twelve_returns[12:1069,2:31], 1, find_three
 mean_best_212 <- c()
 mean_worst_212 <- c()
 
+momentum_payoff_longer <- mean_best_212 - mean_worst_212
+
 for (i in 13:1069){
   mean_best_212 <- c(mean_best_212, mean(industry[i, best_performers_212[(i-12),]]))
   mean_worst_212 <- c(mean_worst_212, mean(industry[i, worst_performers_212[(i-12),]]))
@@ -69,3 +60,44 @@ t_worst_212 <- m_worst_212/ std_worst_212
 
 sr_best_212 <- t_best_212 / sqrt(1057)
 sr_worst_212 <- t_worst_212 / sqrt(1057)
+
+#Question D
+past_212 <- apply(industry, 2, collapse_212)
+past_212[,1] <- industry[,1]
+
+best_performers_d <- t(apply(past_212[12:1069,2:31], 1, find_three_highest))
+worst_performers_d <- t(apply(past_212[12:1069,2:31], 1, find_three_lowest))
+
+mean_best_d <- c()
+mean_worst_d <- c()
+
+for (i in 13:1069){
+  mean_best_d <- c(mean_best_d, mean(industry[i, best_performers_d[(i-12),]]))
+  mean_worst_d <- c(mean_worst_d, mean(industry[i, worst_performers_d[(i-12),]]))
+}
+
+momentum_payoff_d <- mean_best_d - mean_worst_d
+
+#Question E
+
+mean_rf <- mean(ff_factors$RF)
+
+industry_1 <- lm((momentum_payoff - mean_rf) ~ ff_factors$`Mkt-RF`[2:1069] + 
+                   ff_factors$SMB[2:1069] + ff_factors$HML[2:1069])
+industry_12 <- lm((momentum_payoff_longer - mean_rf) ~ ff_factors$`Mkt-RF`[13:1069] + 
+                    ff_factors$SMB[13:1069] + ff_factors$HML[13:1069])
+industry_212 <- lm((momentum_payoff_d - mean_rf) ~ ff_factors$`Mkt-RF`[13:1069] + 
+                     ff_factors$SMB[13:1069] + ff_factors$HML[13:1069])
+
+#Question F
+
+industry_1_UMD <- lm((momentum_payoff - mean_rf) ~ ff_factors$`Mkt-RF`[2:1069] + 
+                   ff_factors$SMB[2:1069] + ff_factors$HML[2:1069] + ff_factors$UMD[2:1069])
+
+industry_12_UMD <- lm((momentum_payoff_longer - mean_rf) ~ ff_factors$`Mkt-RF`[13:1069] + 
+                    ff_factors$SMB[13:1069] + ff_factors$HML[13:1069] + ff_factors$UMD[13:1069])
+
+industry_212_UMD <- lm((momentum_payoff_d - mean_rf) ~ ff_factors$`Mkt-RF`[13:1069] + 
+                     ff_factors$SMB[13:1069] + ff_factors$HML[13:1069] + ff_factors$UMD[13:1069])
+
+#Question G
