@@ -15,10 +15,11 @@ industry <- as.matrix(industry)
 #1a)
 mom <- 1:1068
 for(i in 2 : 1069) {
-  temp_sorted <- sort(industry[(i-1),])
-  avg_losers <- mean(temp_sorted[1:3])
-  avg_winners <- mean(temp_sorted[28:30])
-  mom[(i-1)] <- avg_winners - avg_losers
+  winners <- order(industry[i-1,],decreasing = TRUE)[2:4]
+  losers <- order(industry[i-1,],decreasing = TRUE)[29:31]
+  avg_losers <- mean(industry[i, c(losers)])
+  avg_winners <- mean(industry[i, c(winners)])
+  mom[i-1] <- avg_winners - avg_losers
 }
 
 mom_mean <- mean(mom)
@@ -27,29 +28,32 @@ mom_t_stat <- mom_mean/mom_sd
 mom_sharpe <- (mom_mean - rf)/mom_sd
 
 #b)
+ff_factors <- read_csv("PS6_FF.csv") / 100
+market_auto = cov(ff_factors$`Mkt-RF`[2:1073], ff_factors$`Mkt-RF`[1:1072])
+cross_variance <- var(apply(industry[,2:31], 2, mean))
+market_model <- lm(industry[,2:31] ~ ff_factors$`Mkt-RF`[1:1069])
+betas <- coef(market_model)[2,]
+var_beta <- var(betas)
+resid <- residuals(market_model)
+cross_ac <- mean(apply(resid, 2, return_acov))
 #calculating portfolio betas: 
 betas <- 1:30
 for(i in 2 : 31) {
   betas[i-1] <- cov(ff[1:1069,2],industry[,i]-rf)/var(ff$`Mkt-RF`)
 }
 
-cross_sec_ret <- 1 : 1068
-cross_sec_beta <- 1 : 1068
-cross_sec_res <- 1 : 1068
-for(i in 2 : 1069) { 
-  cross_sec_ret <- var(industry[i-1,])
-  #betas <- lm(industry[i-1,2:31] ~ betas + ff$HML[i-1] + ff$SMB[i-1])
-  
-  
-  cross_sec_beta <- betas %*% cov(ff[i,]$`Mkt-RF`, industry[i,])
-}
+
+cross_sec_ret <- var(apply(industry[,2:31],2,mean))
+cross_sec_bet <- 
+
 
 #1c)
 mom12 <- 1:1057
 for(i in 13 : 1069) {
-  temp_sorted <- sort(apply(industry[(i-12):(i-1),],2,sum))
-  avg_losers <- mean(temp_sorted[1:3])
-  avg_winners <- mean(temp_sorted[28:30])
+  winners <- order(apply(1 + industry[(i-12):(i-1),],2,prod), decreasing = TRUE)[2:4]
+  losers <- order(apply(1 + industry[(i-12):(i-1),],2,prod), decreasing = TRUE)[29:31]
+  avg_losers <- mean(industry[i,c(losers)])
+  avg_winners <- mean(industry[i,c(winners)])
   mom12[i-12] <- avg_winners - avg_losers
 }
 
@@ -61,9 +65,10 @@ mom12_sharpe <- (mom12_mean - rf)/mom12_sd
 #1d)
 mom212 <- 1:1057
 for(i in 13 : 1069) {
-  temp_sorted <- sort(apply(industry[(i-12):(i-2),],2,sum))
-  avg_losers <- mean(temp_sorted[1:3])
-  avg_winners <- mean(temp_sorted[28:30])
+  winners <- order(apply(1 + industry[(i-12):(i-2),],2,prod), decreasing = TRUE)[2:4]
+  losers <- order(apply(1 + industry[(i-12):(i-2),],2,prod), decreasing = TRUE)[29:31]
+  avg_losers <- mean(industry[i,c(losers)])
+  avg_winners <- mean(industry[i,c(winners)])
   mom212[i-12] <- avg_winners - avg_losers
 }
 
@@ -73,14 +78,14 @@ mom212_t_stat <- mom212_mean/mom212_sd
 mom212_sharpe <- (mom212_mean - rf)/mom212_sd
 
 #1e)
-m1 <- lm(mom-rf ~ ff[1:1069,]$`Mkt-RF` + ff[1:1069,]$SMB +ff[1:1069,]$HML)
-m2 <- lm(mom12-rf ~ ff[1:1069,]$`Mkt-RF` + ff[1:1069,]$SMB +ff[1:1069,]$HML)
-m3 <- lm(mom212-rf ~ ff[1:1069,]$`Mkt-RF` + ff[1:1069,]$SMB +ff[1:1069,]$HML)
+m1 <- lm(mom-rf ~ ff[2:1069,]$`Mkt-RF` + ff[2:1069,]$SMB +ff[2:1069,]$HML)
+m2 <- lm(mom12-rf ~ ff[13:1069,]$`Mkt-RF` + ff[13:1069,]$SMB +ff[13:1069,]$HML)
+m3 <- lm(mom212-rf ~ ff[13:1069,]$`Mkt-RF` + ff[13:1069,]$SMB +ff[13:1069,]$HML)
 
 #1f)
-m1f <- lm(mom-rf ~ ff[1:1069,]$`Mkt-RF` + ff[1:1069,]$SMB +ff[1:1069,]$HML + ff[1:1069,]$UMD)
-m2f <- lm(mom12-rf ~ ff[1:1069,]$`Mkt-RF` + ff[1:1069,]$SMB +ff[1:1069,]$HML + ff[1:1069,]$UMD)
-m3f <- lm(mom212-rf ~ ff[1:1069,]$`Mkt-RF` + ff[1:1069,]$SMB +ff[1:1069,]$HML + ff[1:1069,]$UMD)
+m1f <- lm(mom-rf ~ ff[2:1069,]$`Mkt-RF` + ff[2:1069,]$SMB +ff[2:1069,]$HML + ff[2:1069,]$UMD)
+m2f <- lm(mom12-rf ~ ff[13:1069,]$`Mkt-RF` + ff[13:1069,]$SMB +ff[13:1069,]$HML + ff[13:1069,]$UMD)
+m3f <- lm(mom212-rf ~ ff[13:1069,]$`Mkt-RF` + ff[13:1069,]$SMB +ff[13:1069,]$HML + ff[13:1069,]$UMD)
 
 #1g) 
 comm <- read_csv("ps6comm.csv")
@@ -91,19 +96,23 @@ comm_mom <- 1 : 551
 comm_mom12 <- 1 : 540
 comm_mom212 <- 1 : 540
 for(i in 13: 552) {
-  temp_sorted <- sort(comm[i-1,])
-  avg_losers <- mean(temp_sorted[1:3])
-  avg_winners <- mean(temp_sorted[(length(temp_sorted)-4):(length(temp_sorted)-1)])
-  comm_mom[i-1] <- avg_winners - avg_losers
+  temp <- na.omit(comm[i-1,])
+  winners <- order(temp)[2:4]
+  losers <- order(temp)[(length(temp) - 3):(length(temp)-1)]
+  avg_losers <- mean(na.omit(temp[c(losers)]))
+  avg_winners <- mean(na.omit(temp[c(winners)]))
+  comm_mom[i-12] <- avg_winners - avg_losers
   
-  temp_sorted <- sort(apply(comm[(i-12):(i-1),],2,sum))
-  avg_losers <- mean(temp_sorted[1:3])
-  avg_winners <- mean(temp_sorted[(length(temp_sorted)-4):(length(temp_sorted)-1)])
+  winners <- order(apply(na.omit((comm[(i-12):(i-1),]+1)),2,prod))[2:4]
+  losers <- order(apply(na.omit((comm[(i-12):(i-1),]+1)),2,prod))[(length(na.omit(comm[i-1,])) - 3):(length(na.omit(comm[i-1,]))-1)]
+  avg_losers <- mean(na.omit(comm[i-1,c(losers)]))
+  avg_winners <- mean(na.omit(comm[i-1,c(winners)]))
   comm_mom12[i-12] <- avg_winners - avg_losers
   
-  temp_sorted <- sort(apply(comm[(i-12):(i-2),],2,sum))
-  avg_losers <- mean(temp_sorted[1:3])
-  avg_winners <- mean(temp_sorted[(length(temp_sorted)-4):(length(temp_sorted)-1)])
+  winners <- order(apply(na.omit((comm[(i-12):(i-2),]+1)),2,prod))[2:4]
+  losers <- order(apply(na.omit((comm[(i-12):(i-2),]+1)),2,prod))[(length(na.omit(comm[i-1,])) - 3):(length(na.omit(comm[i-1,]))-1)]
+  avg_losers <- mean(na.omit(comm[i-1,c(losers)]))
+  avg_winners <- mean(na.omit(comm[i-1,c(winners)]))
   comm_mom212[i-12] <- avg_winners - avg_losers
 }
 
