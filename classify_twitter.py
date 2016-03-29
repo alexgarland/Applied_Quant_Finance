@@ -41,9 +41,12 @@ with open('negative_tweets.json') as data_file:
 
 tweets = []
 for (words, sentiment) in all_pos + all_neg:
-    words_filtered = [e.lower() for e in words.split() if len(e) >= 3]
+    words_filtered = [e.lower() for e in words.split() if len(e) >= 15]
     tweets.append((words_filtered, sentiment))
 
 word_features = get_word_features(get_words_in_tweets(tweets))
 training_set = nltk.classify.apply_features(extract_features, tweets)
 classifier = nltk.NaiveBayesClassifier.train(training_set)
+
+ind = "Larry is cool"
+print len(extract_features(ind.split()))
