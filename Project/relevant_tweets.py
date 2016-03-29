@@ -15,15 +15,16 @@ with open(filename) as f:
             data = json.loads(line)
             tweet = data['text']
             if ":-)" not in tweet:
+                tries += 1
                 continue
             else:
                 tweets.append(tweet)
-            tries +=1
+                tries +=1
         except:
             exceptions += 1
             continue
 
-print len(tweets)
-print tweets
-print "Tries:", tries
-print "Exceptions:", exceptions
+os.remove(filename)
+
+with open (filename, 'wb') as f:
+    json.dump(tweets, f)
