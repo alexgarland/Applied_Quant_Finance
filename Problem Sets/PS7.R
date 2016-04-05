@@ -4,6 +4,8 @@ library(MASS)
 setwd("~/Applied_Quant_Finance/Problem Sets")
 rm(list=ls())
 
+source('PS7_Helpers.R')
+
 one_month <- read_csv("PS7_1Month.csv")
 one_year <- read_csv("PS7_212Month.csv")
 five_years <- read_csv("PS7_1360Month.csv")
@@ -65,35 +67,49 @@ month_both <- lm(one_month[,2:26] ~ one_month[,27] + one_month[,28])
 year_both <- lm(one_year[,2:26] ~ one_year[,27] + one_year[,28])
 five_years_both <- lm(five_years[,2:26] ~ five_years[,27] + five_years[,28])
 
-all_info <- merge(one_month, one_year, by = "Date")
-all_info <- merge(all_info, five_years, by = "Date")
+py_pm <- one_month[,2:26]
+pf_pm <- one_month[,2:26]
+
+py_py <- one_year[,2:26]
+pf_py <- one_year[,2:26]
+
+py_pf <- five_years[,2:26]
+pf_pf <- five_years[,2:26]
+
+for(i in 1:25){
+  py_pm[,i] <- collapse_212(py_pm[,i])
+  pf_pm[,i] <- collapse_1360(pf_pm[,i])
+  
+  py_py[,i] <- collapse_212(py_py[,i])
+  pf_py[,i] <- collapse_1360(pf_py[,i])
+  
+  py_pf[,i] <- collapse_212(py_pf[,i])
+  pf_pf[,i] <- collapse_1360(pf_pf[,i])
+}
 
 port_coef <- list()
-
-for (i in 2:1015){
-  for (j in 2:26){
-    model <- tryCatch({
-      lm(all_info[i,j] ~ all_info[(i-1),j] + 
-                           all_info[(i-1),(j+27)] + all_info[(i-1),(j+54)])}, 
-      error = function(e){ return(NA) })
-    if (!is.na(model)){
-      
-    }
-  }
-  for (j in 29:53){
-    model <- tryCatch({
-      lm(all_info[i,j] ~ all_info[(i-1),(j-27)] + 
-           all_info[(i-1),(j)] + all_info[(i-1),(j+27)])},
-      error = function(e){  return(NA)  })
-  }
-  for (j in 56:80){
-    model <- tryCatch({
-      lm(all_info[i,j] ~ all_info[(i-1),(j-54)] + 
-           all_info[(i-1),(j-27)] + all_info[(i-1),(j)])},
-      error = function(e){  return(NA)  })
-  }
-}
-
-for (i in 2:1015){
+for(i in 120:1074){
+  reg_df <- data.frame(Current = as.numeric(), Past_Month = as.numeric(), 
+                       Past_Year = as.numeric(), Past_Five = as.numeric())
   
+  temp <- data.frame(Current = one_month[i,2:26], Past_Month = one_month[(i-1), 2:26], 
+                       Past_Year = py_pm[(i-1),], Past_Five = pf_pm[(i-1),])
+    
+  temp2 <- data.frame(Current = one_year[(i-11), 2:26], Past_Month = one_year[(i-12), 2:26], 
+                        Past_Year = py_py[(i-12),], Past_Five = pf_py[(i-12),])
+    
+  temp3 <- data.frame(Current = five_years[(i-59), 2:26], Past_Month = five_years[(i-60), 2:26], 
+                        Past_Year = py_pf[(i-60),], Past_Five =pf_pf[(i-60),])
+  
+  reg_df <- rbind(reg_df, temp, temp2, temp3)
+  model <- lm(reg_df$Current ~ reg_df$Past_Month + reg_df$Past_Year + reg_df$Past_Five)
+  betas <- coef(model)[2:4]
+  port_coef[[length(port_coef)+1]] <- betas
 }
+
+port_coef2 <- t(as.data.frame(port_coef))
+
+mean_coef <- apply(port_coef2, 2, mean)
+sd_coef <- apply(port_coef2, 2, sd)
+sd_coef <- sd_coef / sqrt(955)
+t_coef <- mean_coef / sd_coef
