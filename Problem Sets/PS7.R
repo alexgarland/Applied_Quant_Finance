@@ -1,5 +1,6 @@
 library(readr)
 library(MASS)
+library(moments)
 
 setwd("~/Applied_Quant_Finance/Problem Sets")
 rm(list=ls())
@@ -125,6 +126,7 @@ fy_coef <- coef(five_years_both)[2:3,]
 month_predicted_returns <- list()
 year_predicted_returns <- list()
 fy_predicted_returns <- list()
+date <- list()
 
 for(i in 120:1074){
   month_prediction <- one_month[(i-1), 2:26]*mean_coef[1] + py_pm[(i-1),]*mean_coef[2] + pf_pm[(i-1),]*mean_coef[3]
@@ -143,41 +145,52 @@ for(i in 120:1074){
   month_predicted_returns[[length(month_predicted_returns)+1]] <- month_prediction
   year_predicted_returns[[length(year_predicted_returns)+1]] <- year_prediction
   fy_predicted_returns[[length(fy_predicted_returns)+1]] <- fy_prediction
-}
-
-#Calculate conditional volatility
-conditionalvol <- list()
-error <- list()
-for(i in 120:1074){
-  actual_returns <- c(one_month[i,2:26], one_year[(i-11),2:26], five_years[(i-59),2:26])
-  predicted <- c(month_predicted_returns[[(i-119)]], year_predicted_returns[[(i-119)]], fy_predicted_returns[[(i-119)]])
-  error[[length(error)+1]] <- (actual_returns - predicted)^2
-}
-
-error_df <- data.frame(current = as.numeric(), past = as.numeric())
-for(i in 2:955){
-  temp <- data.frame(current = error[[i]], past = error[[(i-1)]])
-  error_df <- rbind(error_df, temp)
-}
-
-arch_coef <- list()
-arch_coef[[1]] <- c(1,1)
-for(i in 1:954){
-  holder <- lm(error_df$current[1:(75*i)] ~ error_df$past[1:(75*i)])
-  holder <- coef(holder)
-  arch_coef[[(i + 1)]] <- holder
-}
-
-for(i in 1:955){
-  conditionalvol[[i]] <- arch_coef[[i]][1] + arch_coef[[i]][2]* error[[i]]
-}
-
-weights <- list()
-weights[[1]] <- rep(1, 75)/75
-for(i in 2:955){
-  predicted_means <- c(month_predicted_returns[[i]], year_predicted_returns[[i]], fy_predicted_returns[[i]])
-  predicted_vol <- conditionalvol[[(i-1)]]
-  
+  date[[length(date)+1]] <- one_month[i,1]
 }
 
 #Nah, let's use known covariance matrices
+all_info <- merge(one_month, one_year, by="Date")
+all_info[,27] <- NULL
+all_info[,27] <- NULL
+all_info[,52] <- NULL
+all_info[,52] <- NULL
+all_info <- merge(all_info, five_years, by="Date")
+
+all_info <- all_info[60:1015,]
+one_v <- rep(1, 75)
+
+test <- c()
+for(i in 1:955){
+  predicted_returns <- c(month_predicted_returns[[i]], year_predicted_returns[[i]], fy_predicted_returns[[i]])
+  placeholder <- which.max(predicted_returns)
+  placeholder2 <- which.min(predicted_returns)
+  actual <- all_info[(i+1),(placeholder+1)] - all_info[(i+1),(placeholder2+1)]
+  test <- c(test, actual)
+}
+
+mean_return <- mean(test) + mean_rf
+sd_return <- sd(test)/sqrt(955)
+sharpe <- mean(test) / sd(test)
+
+#F
+sd_norm <- (1+ mean(test)^2 / 2*sd(test)^2)/954
+sd_general <- (1/954)*(1 + sharpe^2/4 * (kurtosis(test) - 1) - sharpe*skewness(test))
+
+conf_in_1 <- c(sharpe - sd_norm*1.96, sharpe + sd_norm*1.96)
+conf_in_2 <- c(sharpe - sd_general*1.96, sharpe + sd_general*1.96)
+
+all_info <- all_info[2:956,]
+time_series <- matrix(1:5000, ncol = 5000)
+for(i in 1:955){
+  nums <- sample(2:26, size = 5000, replace=T)
+  random_returns <- as.matrix(all_info[i, nums])
+  time_series <- rbind(time_series, unname(random_returns))
+}
+
+time_series <- time_series[2:954,]
+
+mean_ts <- apply(time_series, 2, mean, na.rm=T)
+sd_ts <- apply(time_series, 2, sd, na.rm=T)
+se_ts <- sd_ts / sqrt(952)
+t_ts <- mean_ts / se_ts
+sharpe_ts <- mean_ts / sd_ts
