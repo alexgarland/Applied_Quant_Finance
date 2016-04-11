@@ -55,3 +55,40 @@ val_weights <- val_weights / sum(val_weights)
 
 mom_weights <- mom_weights / apply(holder[,even], 2, sd, na.rm=T)
 mom_weights <- mom_weights / sum(mom_weights)
+
+val_only <- holder[,odd]
+mom_only <- holder[,even]
+
+weighted_val <- val_only * val_weights
+weighted_mom <- mom_only * mom_weights
+
+val_everywhere <- apply(weighted_val, 1, sum)
+mom_everywhere <- apply(weighted_mom, 1, sum)
+val_everywhere <- val_everywhere[!is.na(val_everywhere)]
+mom_everywhere <- mom_everywhere[!is.na(mom_everywhere)]
+
+mean_val_e <- mean(val_everywhere)
+mean_mom_e <- mean(mom_everywhere)
+
+sd_val_e <- sd(val_everywhere)
+sd_mom_e <- sd(mom_everywhere)
+
+t_val_e <- mean_val_e / (sd_val_e / sqrt(length(val_everywhere)))
+t_mom_e <- mean_mom_e / (sd_mom_e / sqrt(length(mom_everywhere)))
+
+sr_val_e <- mean_val_e / sd_val_e
+sr_mom_e <- mean_mom_e / sd_mom_e
+
+kurt_val_e <- kurtosis(val_everywhere)
+kurt_mom_e <- kurtosis(mom_everywhere)
+
+skew_val_e <- skewness(val_everywhere)
+skew_mom_e <- skewness(mom_everywhere)
+
+#Question E
+combined_val_mom <- val_only * .5 + .5 * mom_only
+vm_mean <- apply(combined_val_mom, 2, mean, na.rm=T)
+vm_sd <- apply(combined_val_mom, 2, sd, na.rm=T)
+vm_count <- apply(combined_val_mom, 2, function(x) length(which(!is.na(x))))
+vm_t <- vm_mean / (vm_sd / sqrt(vm_count))
+vm_sr <- vm_mean / vm_sd
