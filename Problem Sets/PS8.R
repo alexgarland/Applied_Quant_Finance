@@ -2,9 +2,11 @@ library(readr)
 library(MASS)
 library(moments)
 library(stringr)
+library(ggplot2)
 
 setwd("~/Applied_Quant_Finance/Problem Sets")
 rm(list=ls())
+source('~/Applied_Quant_Finance/Problem Sets/PS8_Helpers.R')
 set.seed(1)
 
 #Part A
@@ -47,6 +49,7 @@ t_mom_prem_eq <- (min(mean_mom_eq) - mean(mean_mom_eq))/sd(mean_mom_eq)
 nav_values <- apply(holder, 2, build_nav)
 drawdown_list <- apply(nav_values, 2, find_mdd)
 
+#Part D
 val_weights <- rep(1, 8)
 mom_weights <- rep(1, 8)
 
@@ -92,3 +95,52 @@ vm_sd <- apply(combined_val_mom, 2, sd, na.rm=T)
 vm_count <- apply(combined_val_mom, 2, function(x) length(which(!is.na(x))))
 vm_t <- vm_mean / (vm_sd / sqrt(vm_count))
 vm_sr <- vm_mean / vm_sd
+
+#Question F
+combined_weights <- rep(1, 8)
+combined_weights <- combined_weights / vm_sd
+combined_weights <- combined_weights / sum(combined_weights)
+
+weighted_val_mom <- combined_val_mom * combined_weights
+val_mom <- apply(weighted_val_mom, 1, sum)
+val_mom <- val_mom[!is.na(val_mom)]
+
+mean_all <- mean(val_mom)
+sd_all <- sd(val_mom)
+t_all <- mean_all / (sd_all / sqrt(length(val_mom)))
+sr_all <- mean_all / sd_all
+skew_all <- skewness(val_mom)
+kurt_all <- kurtosis(val_mom)
+
+#Question G
+holder <- holder[133:527,]
+vcov_mat <- cov(holder)
+v_inv <- ginv(vcov_mat)
+one_v <- rep(1, 16)
+tan_weights <- (v_inv %*% mean_returns) / (as.vector(t(one_v) %*% v_inv %*% mean_returns))
+mvp_weights <- (v_inv %*% one_v) / as.vector((t(one_v) %*% v_inv %*% one_v))
+
+mvp_return <- mean_returns %*% mvp_weights
+tan_return <- mean_returns %*% tan_weights
+
+mvp_sd <- (t(mvp_weights) %*% vcov_mat %*% mvp_weights)^(1/2)
+tan_sd <- (t(tan_weights) %*% vcov_mat %*% tan_weights)^(1/2)
+cov_two_port <- t(tan_weights) %*% vcov_mat %*% mvp_weights
+
+weights <- seq(-5, 5, .01)
+efficient_frontier <- data.frame(ret = numeric(), sd = numeric())
+for (w in weights){
+  multi_sd <- (w^2 * mvp_sd^2 + (1-w)^2 * tan_sd^2 + 2*w*(1-w)*cov_two_port)^(1/2)
+  multi_return <- w*mvp_return + (1-w)*tan_return
+  temp = data.frame(ret = multi_return, sd = multi_sd)
+  efficient_frontier <- rbind(efficient_frontier, temp)
+}
+
+factors <- data.frame(ret = mean_returns, sd = sd_returns)
+
+first_plot <- ggplot(data = efficient_frontier, aes(x = sd, y = ret)) + 
+  geom_point(color="firebrick") + 
+  geom_point(aes(x=sd, y = ret), data = factors, color="blue") +
+  geom_point(aes(x=sd_all, y=mean_all), color="green")
+  labs(x="Standard Deviation", y="Return")
+
