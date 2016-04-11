@@ -102,17 +102,17 @@ combined_weights <- combined_weights / vm_sd
 combined_weights <- combined_weights / sum(combined_weights)
 
 weighted_val_mom <- combined_val_mom * combined_weights
-val_mom <- apply(weighted_val_mom, 1, sum)
-val_mom <- val_mom[!is.na(val_mom)]
+val_mom2 <- apply(weighted_val_mom, 1, sum)
+val_mom2 <- val_mom2[!is.na(val_mom2)]
 
-mean_all <- mean(val_mom)
-sd_all <- sd(val_mom)
-t_all <- mean_all / (sd_all / sqrt(length(val_mom)))
+mean_all <- mean(val_mom2)
+sd_all <- sd(val_mom2)
+t_all <- mean_all / (sd_all / sqrt(length(val_mom2)))
 sr_all <- mean_all / sd_all
-skew_all <- skewness(val_mom)
-kurt_all <- kurtosis(val_mom)
+skew_all <- skewness(val_mom2)
+kurt_all <- kurtosis(val_mom2)
 
-#Question G
+#Question g
 holder <- holder[133:527,]
 vcov_mat <- cov(holder)
 v_inv <- ginv(vcov_mat)
@@ -143,4 +143,40 @@ first_plot <- ggplot(data = efficient_frontier, aes(x = sd, y = ret)) +
   geom_point(aes(x=sd, y = ret), data = factors, color="blue") +
   geom_point(aes(x=sd_all, y=mean_all), color="green")
   labs(x="Standard Deviation", y="Return")
+
+#Question i
+holder <- val_mom[133:527,]
+odd_months <- seq(1, 395, 2)
+even_months <- seq(2, 394, 2)
+odd_holder <- holder[odd_months,]
+even_holder <- holder[even_months,]
+
+odd_cov <- cov(odd_holder[,2:17])
+even_cov <- cov(even_holder[,2:17])
+
+odd_vinv <- ginv(odd_cov)
+even_vinv <- ginv(even_cov)
+
+odd_means <- apply(odd_holder[,2:17], 2, mean)
+even_means <- apply(even_holder[,2:17], 2, mean)
+
+odd_tan_weights <- (odd_vinv %*% odd_means) / (as.vector(t(one_v) %*% odd_vinv %*% odd_means))
+even_tan_weights <- (even_vinv %*% even_means) / (as.vector(t(one_v) %*% even_vinv %*% even_means))
+
+odd_returns <- even_holder[,2:17] * odd_tan_weights
+even_returns <- odd_holder[,2:17] * even_tan_weights
+
+oos_returns <- rbind(odd_returns, even_returns)
+oos_returns <- apply(oos_returns, 1, sum)
+mean_oos <- mean(oos_returns)
+sd_oos <- sd(oos_returns)
+
+second_plot <- ggplot(data = efficient_frontier, aes(x = sd, y = ret)) + 
+  geom_point(color="firebrick") + 
+  geom_point(aes(x=sd, y = ret), data = factors, color="blue") +
+  geom_point(aes(x=sd_all, y=mean_all), color="green") +
+  geom_point(aes(x=sd_oos, y=mean_oos), color="pink") + 
+  labs(x="Standard Deviation", y="Return")
+
+cor_matrix <- cor(holder[,2:17])
 
