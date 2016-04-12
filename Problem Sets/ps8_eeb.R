@@ -59,6 +59,19 @@ general_outliers <- sharpes[sharpes > ig_high || sharpes < ig_low]
 
 # b) 
 #seemingly not but that's not expected--look for FI discrepancies
+odds <- rep(1,1,15)
+evens<- rep(2,2,16)
+mean_val <- means[odds]
+mean_mom <- means[evens]
+t_val_prem <- (max(mean_val) - mean(mean_val))/sd(mean_val)
+t_mom_prem <- (min(mean_mom) - mean(mean_mom))/sd(mean_mom)
+
+mean_val_eq <- mean_val[1:5]
+mean_mom_eq <- mean_mom[1:5]
+
+t_val_prem_eq <- (max(mean_val_eq) - mean(mean_val_eq))/sd(mean_val_eq)
+t_mom_prem_eq <- (min(mean_mom_eq) - mean(mean_mom_eq))/sd(mean_mom_eq)
+
 
 # c) 
 max_drawdown <- function(returns) {
@@ -99,27 +112,37 @@ mom_ports <- merge(mom_ports, asset_factors[,c("Date","MOM^EQ","MOM^FX","MOM^FI"
 
 value_means <- sapply(value_ports[,2:9], mean, na.rm=T)
 value_sds <- sapply(value_ports[,2:9], sd, na.rm=T)
-value_sd_sum <- sum(value_sds)
-weighted_value_mean <- value_means %*% (value_sds/value_sd_sum)
+value_sd_sum <- sum(1/value_sds)
+weighted_value_mean <- value_means %*% ((1/value_sds)/value_sd_sum)
 weighted_value_t <- (value_means * (value_sds/value_sd_sum)) / (value_sds/sqrt(527))
 weighted_value_port <- apply(na.omit(value_ports[,2:9] * (value_sds/value_sd_sum)), 1, sum)
+wvp_sd <- sd(weighted_value_port)
 
 mom_means <- sapply(mom_ports[,2:9], mean, na.rm=T)
 mom_sds <- sapply(mom_ports[,2:9], sd, na.rm=T)
-mom_sd_sum <- sum(mom_sds)
-weighted_mom_mean <- mom_means %*% (mom_sds/mom_sd_sum)
+mom_sd_sum <- sum(1/mom_sds)
+weighted_mom_mean <- mom_means %*% ((1/mom_sds)/mom_sd_sum)
 weighted_mom_t <- (mom_means * (mom_sds/mom_sd_sum)) / (mom_sds/sqrt(527))
 weighted_mom_port <- apply(na.omit(mom_ports[,2:9] * (mom_sds/mom_sd_sum)), 1, sum)
+wmp_sd <- sd(weighted_mom_port)
 
 # e) 
 combined <- 0.5*value_ports + 0.5*mom_ports
+count_comb <- apply(combined[,2:9], 2, function(x) length(which(!is.na(x))))
 comb_means <- sapply(combined[,2:9], mean, na.rm=T)
 comb_sds <- sapply(combined[,2:9], sd, na.rm=T)
 comb_sharpes <- comb_means / (comb_sds)
 comb_kurts <- sapply(combined[,2:9], kurtosis, na.rm=T)
 comb_skews <- sapply(combined[,2:9], skewness, na.rm=T)
+comb_ts <- comb_means/(comb_sds/sqrt(527))
 weighted_value_t <- (comb_means) / (comb_sds/sqrt(527)) 
 comb_dd <- sapply(combined[,2:9], max_drawdown)
+nav_values_c <- apply(na.omit(combined), 2, build_nav)
+drawdown_list_c <- apply(nav_values_c, 2, find_mdd)
+
+comb_normal <- (1+comb_means^2 / 2*comb_sds^2) * 1/(count_comb-1)
+comb_general <- (1/(count_comb-1)) * (1 + (comb_sharpes^2 / 4) * (comb_kurts - 1) -
+                                    comb_sharpes * comb_skews)
 
 # f) 
 comb_sd_sums <- sum(1/comb_sds)
@@ -129,6 +152,10 @@ global_sharpe <- global_mean/global_sd
 global_t <- global_sharpe/sqrt(527)
 global_skew <- comb_skews %*% ((1/comb_sds) / comb_sd_sums)
 global_kurt <- comb_kurts %*% ((1/comb_sds) / comb_sd_sums)
+
+glob_normal <- (1+global_mean^2 / 2*global_sd^2) * 1/(527-1)
+glob_general <- (1/(527-1)) * (1 + (global_sharpe^2 / 4) * (global_kurt - 1) -
+                                    global_sharpe * global_skew)
 
 # g)
 #holy sharpe ratios
