@@ -182,6 +182,11 @@ second_plot <- ggplot(data = efficient_frontier, aes(x = sd, y = ret)) +
 cor_matrix <- cor(holder[,2:17])
 
 #Question k
+model <- lm(as.matrix(holder[,2:17]) ~ val_everywhere + mom_everywhere)
+predictions <- predict(model)
+mean_predicts <- apply(predictions, 2, mean)
+plot(mean_predicts)
+points(mean_returns, col ="red")
 
 #Question l
 historical_factors <- read_csv("PS8_FF.csv")
