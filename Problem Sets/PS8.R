@@ -388,6 +388,13 @@ for (w in weights){
   efficient_frontier2 <- rbind(efficient_frontier2, temp)
 }
 
+this_plot <- ggplot(data = efficient_frontier2, aes(x = sd, y = ret)) + 
+  geom_point(color="firebrick") + 
+  geom_point(aes(x=sd, y = ret), data = factors, color="blue") + 
+  geom_point(aes(x=tan_sd2, y=tan_return2), color="green")
+labs(x="Standard Deviation", y="Return")
+print(this_plot)
+
 #Question p
 even <- seq(2, 310, 2)
 odd <- seq(1, 311, 2)
@@ -414,3 +421,11 @@ even_ret <- apply(even_ret, 1, sum)
 total <- c(odd_ret, even_ret)
 total_mean <- mean(total)
 total_sd <- sd(total)
+
+this_plot2 <- ggplot(data = efficient_frontier2, aes(x = sd, y = ret)) + 
+  geom_point(color="firebrick") + 
+  geom_point(aes(x=sd, y = ret), data = factors, color="blue") + 
+  geom_point(aes(x=tan_sd2, y=tan_return2), color="green") + 
+  geom_point(aes(x=total_sd, y=total_mean), color="pink")
+labs(x="Standard Deviation", y="Return")
+print(this_plot2)
