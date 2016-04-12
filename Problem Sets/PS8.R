@@ -178,5 +178,93 @@ second_plot <- ggplot(data = efficient_frontier, aes(x = sd, y = ret)) +
   geom_point(aes(x=sd_oos, y=mean_oos), color="pink") + 
   labs(x="Standard Deviation", y="Return")
 
+#Question j
 cor_matrix <- cor(holder[,2:17])
 
+#Question k
+
+#Question l
+historical_factors <- read_csv("PS8_FF.csv")
+historical_factors <- historical_factors/100
+
+#CAPM
+capm_stats <- list()
+ff4_stats <- list()
+amp3_stats <- list()
+amp_ts_stats <- list()
+amp_all_stats <- list()
+
+tsmom <- read_csv("PS8_TSMom.csv")
+alex <- apply(tsmom[,2:6], 2, str_replace_all, fixed("%"), "")
+alex <- apply(alex, 2, as.numeric)/100
+tsmom[,2:6] <- alex
+
+temp <- historical_factors[703:1073,]
+holder <- holder[25:395,]
+
+for (i in 2:17){
+  capm <- lm(holder[,i] ~ temp$`Mkt-RF`)
+  ff_4 <- lm(holder[,i] ~ temp$`Mkt-RF` + temp$SMB + temp$HML + temp$UMD)
+  amp_3 <- lm(holder[,i] ~ temp$`Mkt-RF` + val_everywhere[25:395] + mom_everywhere[25:395])
+  amp_ts <- lm(holder[,i] ~ temp$`Mkt-RF` + val_everywhere[25:395] + mom_everywhere[25:395] + tsmom$TSMOM)
+  amp_ts_ex <- lm(holder[,i] ~ temp$`Mkt-RF` + val_everywhere[25:395] + mom_everywhere[25:395] + tsmom$TSMOM +
+                    temp$STREV + temp$LTREV)
+  capm_stats[[(i-1)]] <- c(coef(capm)[1], summary(capm)[8])
+  ff4_stats[[(i-1)]] <- c(coef(ff_4)[1], summary(ff_4)[8])
+  amp3_stats[[(i-1)]] <- c(coef(amp_3)[1], summary(amp_3)[8])
+  amp_ts_stats[[(i-1)]] <- c(coef(amp_ts)[1], summary(amp_ts)[8])
+  amp_all_stats[[(i-1)]] <- c(coef(amp_ts_ex)[1], summary(amp_ts_ex)[8])
+}
+
+#Question m
+eq_model <- lm(holder$MOM.EQ ~ tsmom$`TSMOM^EQ`)
+cm_model <- lm(holder$MOM.CM ~ tsmom$`TSMOM^CM`)
+fi_model <- lm(holder$MOM.FI ~ tsmom$`TSMOM^FI`)
+fx_model <- lm(holder$MOM.FX ~ tsmom$`TSMOM^FX`)
+
+eq2 <- lm(tsmom$`TSMOM^EQ` ~ holder$MOM.EQ)
+cm2 <- lm(tsmom$`TSMOM^CM` ~ holder$MOM.CM)
+fi2 <- lm(tsmom$`TSMOM^FI` ~ holder$MOM.FI)
+fx2 <- lm(tsmom$`TSMOM^FX` ~ holder$MOM.FX)
+
+
+#Question n
+hfri_index <- read_csv("PS8_HFRI.csv")
+djcs_index <- read_csv("PS8_DJCS.csv")
+
+super_temp <- apply(hfri_index[,2:11], 2, str_replace_all, fixed("%"), "")
+super_temp <- as.numeric(super_temp) / 100
+hfri_index[,2:11] <- super_temp
+
+super_temp <- apply(djcs_index[,2:11], 2, str_replace_all, fixed("%"), "")
+super_temp <- as.numeric(super_temp) / 100
+djcs_index[,2:11] <- super_temp
+
+defense_stats <- read.csv("PS8_Bab.csv", stringsAsFactors = F)
+super_temp <- apply(defense_stats[,2:4], 2, str_replace_all, fixed("%"), "")
+super_temp[nchar(super_temp) == 0] <- NA
+
+#HFRI models
+hfri_model1 <- lm(as.matrix(hfri_index[1:311,2:11]) ~ historical_factors$`Mkt-RF`[763:1073])
+
+hfri_model2 <- lm(as.matrix(hfri_index[2:311,2:11]) ~ historical_factors$`Mkt-RF`[764:1073] +
+                    historical_factors$`Mkt-RF`[763:1072])
+hfri_model3 <- lm(as.matrix(hfri_index[2:311,2:11]) ~ historical_factors$`Mkt-RF`[764:1073] +
+                    historical_factors$`Mkt-RF`[763:1072] + historical_factors$SMB[764:1073] +
+                    historical_factors$HML[764:1073 + historical_factors$UMD[764:1073]])
+
+hfri_model4 <- lm(as.matrix(hfri_index[2:311,2:11]) ~ historical_factors$`Mkt-RF`[764:1073] +
+                    historical_factors$`Mkt-RF`[763:1072] + val_everywhere[86:395] + mom_everywhere[86:395])
+
+hfri_model5 <- lm(as.matrix(hfri_index[2:311,2:11]) ~ historical_factors$`Mkt-RF`[764:1073] +
+                    historical_factors$`Mkt-RF`[763:1072] + val_everywhere[86:395] + mom_everywhere[86:395] +
+                    tsmom$TSMOM[62:371])
+
+hfri_model6 <- lm(as.matrix(hfri_index[2:311,2:11]) ~ historical_factors$`Mkt-RF`[764:1073] +
+                    historical_factors$`Mkt-RF`[763:1072] + val_everywhere[86:395] + mom_everywhere[86:395] +
+                    tsmom$TSMOM[62:371] + historical_factors$STREV[764:1073] + historical_factors$LTREV[764:1073])
+
+hfri_model7
+#Question o
+
+#Question p
