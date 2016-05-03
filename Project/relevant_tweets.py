@@ -45,7 +45,7 @@ with open(filename) as f:
     for line in f:
         try:
             data = json.loads(line)
-            tweet = data['text']
+            tweet = data['text', 'created_at']
             if any(term in tweet for term in search):
                 tweets.append(tweet)
                 tries +=1
