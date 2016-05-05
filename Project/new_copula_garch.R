@@ -1,6 +1,7 @@
 library(copula)
 library(rugarch)
 library(readr)
+library(ggplot2)
 
 setwd("~/Applied_Quant_Finance/Project")
 rm(list=ls())
@@ -53,3 +54,6 @@ fit_vm_res <- fitCopula(ellipCopula("t", dim=2), data=mom_val_res, method="ml")
 tailIndex(fit_vm_res@copula)
 
 plot(mom_value, cex=.0001)
+
+first_plot <- ggplot(data = as.data.frame(mom_value), aes(x = mom, y = val)) + 
+  geom_point(size = .001, color = "firebrick")
