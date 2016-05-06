@@ -57,3 +57,7 @@ plot(mom_value, cex=.0001)
 
 first_plot <- ggplot(data = as.data.frame(mom_value), aes(x = mom, y = val)) + 
   geom_point(size = .001, color = "firebrick")
+
+#Summary statistics
+strats <- data.frame(all_data$HML, all_data$Mom, all_data$combined)
+corr_mat <- cor(strats)
