@@ -1,4 +1,4 @@
-directory="~/Applied_Quant_Finance/27"
+directory= '~/Applied_Quant_Finance/27'
 cd ~/Applied_Quant_Finance/27
 
 #Create the relevant json files and run the relevant python file

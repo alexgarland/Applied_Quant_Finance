@@ -1,0 +1,27 @@
+\documentclass[12pt,letterpaper]{memoir}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{times}
+\usepackage{geometry}
+\geometry{margin=1in}
+\renewcommand{\baselinestretch}{2}
+
+\begin{document}
+    \vspace*{-50pt}
+    \begin{center}
+    	\textbf{{\large Dependency Structures in Momentum and Value Strategies}}
+    	\\
+    	\textit{Alex Garland, Emily Bazcyk, Group 10}
+    \end{center}
+    
+\subsection*{Introduction}
+Since their introduction as trading strategies, value and momentum have both been of particular interest to those in the finance community. They each have their own benefits and drawbacks. For value, it can be a sometimes underwhelming performance, while momentum has the "elevator-escalator" pattern, wherein it can face catastrophic losses in a short period of time. While there have been attempts to help combat these failings of the strategies (for instances, see attempts by Moskowitz to limit this effect by using conditional Sharpe Ratio or static volatility strategies), it seems that one of the best ways to avoid this problem is by simply using a combination of the two strategies. It is not immediately apparent (either mathematically or economically) why such a strategy works as well as it does. This paper will attempt to explore one aspect of the underlying mathematics, connect it with economic intuition, and mention possible financial implications of this.
+\subsection*{Data, Methodology, and Model}
+We begin first by pulling Fama-French factors from Kenneth French's webpage, and using these as a reasonable stand-in for what a momentum or value investor might see in his/her returns. The data is particularly useful, given that there are publicly available daily returns dating back to 1926.
+
+From here, we now create a "combined" strategy by equal weighting the returns from the HML (value) factor, and the momentum factor. All 3 of these strategies show significant autocorrelation, and are thus modeled as an ARMA(5,5) process.
+
+\end{document}
