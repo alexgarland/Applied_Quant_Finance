@@ -30,8 +30,11 @@ Having now explained the process at hand, we can now explain the particular resu
 
 However, just as interesting (if not more so) than the correlation table are the exact specifics of the pseudo-observations (the observations when combined by the empirical cumulative distribution function) of momentum and value, particularly when plotted against each other. This is exactly what is seen in Figure 1. What is most surprising about Fig. 1, though, is the "x" shaped pattern that appears (all of the corners are filled out). It is less common, in other words, that we see a day where one performed on the extreme, and the other did not. This scene is repeated in Fig. 2, implying that when we get extreme errors in our time series predictions, we seem to also get extreme errors in our time series predictions with the other.
 
-The exception, however, seems to be the standardized residuals. The "x" pattern is less pronounced in this chart, which also keeps in line with estimated tail dependency parameters (the observations return an upper/lower tail parameter of .189, the residuals return .192, and the standardized residuals return .106).
+The exception, however, seems to be the standardized residuals. The "x" pattern is less pronounced in this chart, which also keeps in line with estimated tail dependency parameters (the observations return an upper/lower tail parameter of .189, the residuals return .192, and the standardized residuals return .106). This is a slightly anomaly and likely deserves future consideration and study in the causal mechanisms.
 \subsection*{Economic Implications}
+So what are the economic and financial implications of this project? Going point by point, we can see that Figures 1 and 2 and the particular "x" pattern that appears in both of the scatterplot of their observations helps explain one of the particularities of the value-momentum strategy; extreme observations for one means extreme observations for the others. This keeps in line with the behavior shown in previous studies that note an anomalously high return during the Great Recession while noting a much more average return during the subsequent recovery. The causal mechanisms behind this remain unknown, but it is a trend that remains on the daily level and a trend that applies even to error of time series models. This behavior could be beneficial for fund managers, given that they are appropriately appraised of the tendencies for extremes to lead to extremes (as there was, after all, some tendency for clustering at the level of extremely disappointing returns/errors for both strategies at the same time).
+
+However, the real draw for fund managers would likely come from the low tail dependency parameter of the standardized residuals and Figure 3. This largely (but not entirely) removes one level of risk that fund managers could be worried about. Exogenous shocks to each strategy typically won't be affecting each other, which makes the combination strategy a particularly attractive one (because it implies that one can, at least on some level, predict those times when volatility will move together between the two strategies). Thus the dependency structures only weakly persist into the level of randomness. This reduced level of worry about correlation of shock could have a particularly large effect for those managers committed to certain levels of risk, reducing rebalancing costs. It is worth noting, however, that we find a weak persistence, not a complete lack of persistance. In fact, the persistence seems to be more pronounced than a simple measure of correlation might suggest (see Table 3 for a reference to the extremely low stated correlation of standardized residuals).
 \subsection*{Robustness and Errors}
 \newpage
 \subsection*{Tables and Figures}
@@ -83,4 +86,18 @@ all\_data.HML & 1.00 & -0.14 & 0.55 \\
 \includegraphics[scale=1]{stres}
 \caption{Pseudo-Observations of the standardized residuals plotted against each other}
 \end{figure}
+% latex table generated in R 3.2.5 by xtable 1.8-2 package
+% Sat May  7 14:09:15 2016
+\begin{table}[ht]
+\centering
+\caption{Correlation of standardized residuals}
+\begin{tabular}{rrr}
+  \hline
+ & mom & val \\ 
+  \hline
+mom & 1.00 & -0.03 \\ 
+  val & -0.03 & 1.00 \\ 
+   \hline
+\end{tabular}
+\end{table}
 \end{document}
