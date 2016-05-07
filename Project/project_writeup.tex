@@ -36,6 +36,13 @@ So what are the economic and financial implications of this project? Going point
 
 However, the real draw for fund managers would likely come from the low tail dependency parameter of the standardized residuals and Figure 3. This largely (but not entirely) removes one level of risk that fund managers could be worried about. Exogenous shocks to each strategy typically won't be affecting each other, which makes the combination strategy a particularly attractive one (because it implies that one can, at least on some level, predict those times when volatility will move together between the two strategies). Thus the dependency structures only weakly persist into the level of randomness. This reduced level of worry about correlation of shock could have a particularly large effect for those managers committed to certain levels of risk, reducing rebalancing costs. It is worth noting, however, that we find a weak persistence, not a complete lack of persistance. In fact, the persistence seems to be more pronounced than a simple measure of correlation might suggest (see Table 3 for a reference to the extremely low stated correlation of standardized residuals).
 \subsection*{Robustness and Errors}
+Finally, we take a quick look at the robustness of our results and the possibility of error within them. As mentioned before, we made use of an ARMA(5,5)-GARCH(5,5) model, and the vast majority of our coefficients registered statistically significant values, even when considering robust standard errors (as seen in Tables 4 and 5). This is less true for our evaluation on the value strategy than for the momentum strategy, but we are pleased with the results. Even further, a quantile-quantile plot of our standardized residuals supports our skewed t-distribution choice, especially for value (see Figs. 4 and 5). 
+
+With that said, there can still be some concern over the fitting of our model. Box-Ljung tests on the standardized residuals still suggest that there is significant autocorrelation among them. We chose not to fit higher degree models given both the computational expense and the risks of overfitting. Despite even this, we have reason to believe that the results and dependency structures should not change significantly given higher order models. 
+
+The final concerns to be noted would be the concerns over the fitting of the t-copulas. In every case, the maximum likelihood optimization converged and returned estimates (of Spearman's Rho and the degrees of freedom) that were highly significant in every case. Thus, we are satisfied in saying that this fitting is an appropriate one.
+\subsection*{Conclusion}
+To the best of our knowledge, we are the first to apply a copula-GARCH model to value and momentum simultaneously (especially on the daily level) as a way of measuring the dependency structures underlying the movements of a combination strategy. Our results are mathematically and econometrically sound, and quantifies tail risk of the combination strategy in a way that should be of interest to those investing in such a strategy.
 \newpage
 \subsection*{Tables and Figures}
 % latex table generated in R 3.2.5 by xtable 1.8-2 package
@@ -100,4 +107,94 @@ mom & 1.00 & -0.03 \\
    \hline
 \end{tabular}
 \end{table}
+% latex table generated in R 3.2.5 by xtable 1.8-2 package
+% Sat May  7 16:37:46 2016
+\begin{table}[ht]
+\centering
+\caption{T Scores with robust standard errors (momentum)}
+\begin{tabular}{rr}
+  \hline
+ & T Score \\ 
+  \hline
+mu & 10.41 \\ 
+  ar1 & 31.76 \\ 
+  ar2 & -61.60 \\ 
+  ar3 & -13.31 \\ 
+  ar4 & 102.47 \\ 
+  ar5 & -1.33 \\ 
+  ma1 & -20.87 \\ 
+  ma2 & 38.10 \\ 
+  ma3 & 29.30 \\ 
+  ma4 & -72.64 \\ 
+  ma5 & -1.06 \\ 
+  omega & -4.08 \\ 
+  alpha1 & -10.15 \\ 
+  alpha2 & -9.00 \\ 
+  alpha3 & 10.26 \\ 
+  alpha4 & 11.30 \\ 
+  alpha5 & 11.61 \\ 
+  beta1 & 30.00 \\ 
+  beta2 & 2684035.13 \\ 
+  beta3 & 5247674.16 \\ 
+  beta4 & 182.88 \\ 
+  beta5 & -288567276.16 \\ 
+  gamma1 & 4.87 \\ 
+  gamma2 & 3.17 \\ 
+  gamma3 & 11.93 \\ 
+  gamma4 & -4.69 \\ 
+  gamma5 & -3.39 \\ 
+  skew & 109.34 \\ 
+  shape & 19.51 \\ 
+   \hline
+\end{tabular}
+\end{table}
+% latex table generated in R 3.2.5 by xtable 1.8-2 package
+% Sat May  7 16:40:19 2016
+\begin{table}[ht]
+\centering
+\caption{T Scores with robust standard errors (value)}
+\begin{tabular}{rr}
+  \hline
+ & T Score \\ 
+  \hline
+mu & 0.61 \\ 
+  ar1 & 7.41 \\ 
+  ar2 & -3.99 \\ 
+  ar3 & 8.50 \\ 
+  ar4 & 0.11 \\ 
+  ar5 & -0.31 \\ 
+  ma1 & -3.78 \\ 
+  ma2 & 2.35 \\ 
+  ma3 & -1.82 \\ 
+  ma4 & -0.14 \\ 
+  ma5 & 0.37 \\ 
+  omega & -6.55 \\ 
+  alpha1 & 0.14 \\ 
+  alpha2 & 0.44 \\ 
+  alpha3 & -0.73 \\ 
+  alpha4 & -0.09 \\ 
+  alpha5 & -0.15 \\ 
+  beta1 & 5705.46 \\ 
+  beta2 & 3540.51 \\ 
+  beta3 & 4454.70 \\ 
+  beta4 & -19455.86 \\ 
+  beta5 & -868607.49 \\ 
+  gamma1 & 2554.68 \\ 
+  gamma2 & 2.90 \\ 
+  gamma3 & -2.81 \\ 
+  gamma4 & -2397.56 \\ 
+  gamma5 & -0.94 \\ 
+  skew & 50.90 \\ 
+  shape & 11.73 \\ 
+   \hline
+\end{tabular}
+\end{table}
+\begin{figure}
+\includegraphics[scale=1]{qqplotmom}
+\caption{Q-Q Plot of Standardized Residuals (Momentum)}
+\end{figure}
+\begin{figure}
+\includegraphics[scale=1]{qqplotval}
+\caption{Q-Q Plot of Standardized Residuals (Value)}
+\end{figure}
 \end{document}

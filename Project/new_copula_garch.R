@@ -62,4 +62,5 @@ first_plot <- ggplot(data = as.data.frame(mom_value), aes(x = mom, y = val)) +
 strats <- data.frame(all_data$HML, all_data$Mom, all_data$combined)
 corr_mat <- cor(strats)
 
-shocks <- data.frame(mom = mom_shock, both = both_shock)
+shocks <- data.frame(mom = mom_shock, val = value_shock)
+corr_shocks <- cor(shocks)
