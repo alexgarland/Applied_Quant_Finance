@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2015.7.18)  9 MAY 2016 15:32
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2015.7.18)  10 MAY 2016 03:12
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -39,8 +38,8 @@ Package ifluatex Info: LuaTeX not detected.
 Package: etex 1998/03/26 v2.0 eTeX basic definition package (PEB)
 \et@xins=\count81
 )
-(/usr/share/texlive/texmf-dist/tex/latex/memoir/mem12.clo
-File: mem12.clo 2010/10/19 v0.4b memoir class 12pt size option
+(/usr/share/texlive/texmf-dist/tex/latex/memoir/mem11.clo
+File: mem11.clo 2008/01/30 v0.3 memoir class 11pt size option
 )
 \binding=\skip48
 \spinemargin=\skip49
@@ -769,12 +768,12 @@ e
 * \textheight=650.43001pt
 * \oddsidemargin=0.0pt
 * \evensidemargin=0.0pt
-* \topmargin=-34.3738pt
-* \headheight=14.5pt
+* \topmargin=-33.4738pt
+* \headheight=13.6pt
 * \headsep=19.8738pt
-* \topskip=12.0pt
-* \footskip=30.0pt
-* \marginparwidth=102.0pt
+* \topskip=11.0pt
+* \footskip=27.46295pt
+* \marginparwidth=111.0pt
 * \marginparsep=7.0pt
 * \columnsep=10.0pt
 * \skip\footins=12.0pt plus 4.0pt minus 4.0pt
@@ -787,125 +786,70 @@ e
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10.95> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 15.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
 (Font)              Font shape `OT1/ptm/b/n' tried instead on input line 15.
-LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <14.4> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 15.
-[1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}
-
-]
-Underfull \vbox (badness 2495) has occurred while \output is active []
-
- [2]
-Underfull \vbox (badness 3514) has occurred while \output is active []
-
- [3]
-Underfull \vbox (badness 3514) has occurred while \output is active []
-
- [4]
-[5]
-LaTeX Font Info:    Try loading font information for U+msa on input line 53.
- (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
+LaTeX Font Info:    Try loading font information for U+msa on input line 24.
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 53.
+LaTeX Font Info:    Try loading font information for U+msb on input line 24.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-)
+) [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}
+
+] [2] [3] [4] [5]
 <obs.png, id=21, 429.10312pt x 287.57437pt>
 File: obs.png Graphic file (type png)
  <use obs.png>
-Package pdftex.def Info: obs.png used on input line 85.
+Package pdftex.def Info: obs.png used on input line 91.
 (pdftex.def)             Requested size: 429.10207pt x 287.57367pt.
 
 <res.png, id=22, 429.10312pt x 287.57437pt>
 File: res.png Graphic file (type png)
  <use res.png>
-Package pdftex.def Info: res.png used on input line 89.
+Package pdftex.def Info: res.png used on input line 95.
 (pdftex.def)             Requested size: 429.10207pt x 287.57367pt.
 
 <stres.png, id=23, 429.10312pt x 287.57437pt>
 File: stres.png Graphic file (type png)
  <use stres.png>
-Package pdftex.def Info: stres.png used on input line 93.
+Package pdftex.def Info: stres.png used on input line 99.
 (pdftex.def)             Requested size: 429.10207pt x 287.57367pt.
 
 <qqplotmom.png, id=24, 429.10312pt x 287.57437pt>
 File: qqplotmom.png Graphic file (type png)
  <use qqplotmom.png>
-Package pdftex.def Info: qqplotmom.png used on input line 193.
+Package pdftex.def Info: qqplotmom.png used on input line 199.
 (pdftex.def)             Requested size: 429.10207pt x 287.57367pt.
 
 <qqplotval.png, id=25, 429.10312pt x 287.57437pt>
 File: qqplotval.png Graphic file (type png)
  <use qqplotval.png>
-Package pdftex.def Info: qqplotval.png used on input line 197.
+Package pdftex.def Info: qqplotval.png used on input line 203.
 (pdftex.def)             Requested size: 429.10207pt x 287.57367pt.
  [6]
 [7 <./obs.png> <./res.png>] [8 <./stres.png> <./qqplotmom.png (PNG copy)>]
 [9] [10] [11 <./qqplotval.png (PNG copy)>] (./project_writeup.aux) ) 
 Here is how much of TeX's memory you used:
- 6522 strings out of 493304
- 86954 string characters out of 6139871
- 192873 words of memory out of 5000000
- 9903 multiletter control sequences out of 15000+600000
- 15035 words of font info for 42 fonts, out of 8000000 for 9000
+ 6540 strings out of 493304
+ 87152 string characters out of 6139871
+ 193885 words of memory out of 5000000
+ 9914 multiletter control sequences out of 15000+600000
+ 21683 words of font info for 56 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
- 42i,11n,29p,1129b,231s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 42i,10n,29p,1259b,229s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share
 /texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texlive/texmf-dist/
 fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw
 /times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.
 pfb>
-Output written on project_writeup.pdf (11 pages, 318880 bytes).
+Output written on project_writeup.pdf (11 pages, 319699 bytes).
 PDF statistics:
  61 PDF objects out of 1000 (max. 8388607)
  36 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  26 words of extra memory for PDF output out of 10000 (max. 10000000)
 
-=======
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2015.1.7)  10 MAY 2016 02:17
-entering extended mode
-**C:/Users/Emily/Documents/GitHub/Applied_Quant_Finance/Project/project_writeup
-.tex
-
-(C:/Users/Emily/Documents/GitHub/Applied_Quant_Finance/Project/project_writeup.
-tex
-LaTeX2e <2011/06/27>
-Babel <v3.8m> and hyphenation patterns for english, afrikaans, ancientgreek, ar
-abic, armenian, assamese, basque, bengali, bokmal, bulgarian, catalan, coptic, 
-croatian, czech, danish, dutch, esperanto, estonian, farsi, finnish, french, ga
-lician, german, german-x-2013-05-26, greek, gujarati, hindi, hungarian, iceland
-ic, indonesian, interlingua, irish, italian, kannada, kurmanji, latin, latvian,
- lithuanian, malayalam, marathi, mongolian, mongolianlmc, monogreek, ngerman, n
-german-x-2013-05-26, nynorsk, oriya, panjabi, pinyin, polish, portuguese, roman
-ian, russian, sanskrit, serbian, slovak, slovenian, spanish, swedish, swissgerm
-an, tamil, telugu, turkish, turkmen, ukenglish, ukrainian, uppersorbian, usengl
-ishmax, welsh, loaded.
-
-! LaTeX Error: File `memoir.cls' not found.
-
-Type X to quit or <RETURN> to proceed,
-or enter new name. (Default extension: cls)
-
-Enter file name: 
-! Emergency stop.
-<read *> 
-         
-l.2 \usepackage
-               [utf8]{inputenc}
-End of file on the terminal!
-
- 
-Here is how much of TeX's memory you used:
- 12 strings out of 493921
- 366 string characters out of 3147283
- 49031 words of memory out of 3000000
- 3403 multiletter control sequences out of 15000+200000
- 3640 words of font info for 14 fonts, out of 3000000 for 9000
- 841 hyphenation exceptions out of 8191
- 10i,0n,7p,127b,8s stack positions out of 5000i,500n,10000p,200000b,50000s
-!  ==> Fatal error occurred, no output PDF file produced!
->>>>>>> e1cc543508ac818fd6a1efd08f0bf7098a8eec37

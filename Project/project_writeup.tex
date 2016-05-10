@@ -21,9 +21,9 @@
 Since their introduction as trading strategies, value and momentum have both been of particular interest to those in the finance community. They each have their own benefits and drawbacks. For value, it can be a sometimes underwhelming performance, while momentum has the "elevator-escalator" pattern, wherein it can face catastrophic losses in a short period of time. While there have been attempts to help combat these failings of the strategies (for instances, see attempts by Moskowitz to limit this effect by using conditional Sharpe Ratio or static volatility strategies), it seems that one of the best ways to avoid this problem is by simply using a combination of the two strategies. It is not immediately apparent (either mathematically or economically) why such a strategy works as well as it does. This paper will attempt to explore one aspect of the underlying mathematics, connect it with economic intuition, and mention the possible financial implications.
 
 \subsection*{Data, Methodology, and Model}
-We begin first by pulling Fama-French factors from Kenneth French's webpage\footnote{http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html} and use these as a reasonable stand-in for what a momentum or value investor might see in his returns. We used publicly available daily factor returns dating back to 1926.
+We begin first by pulling Fama-French factors from Kenneth French's webpage \footnote{http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data\_library.html} and use these as a reasonable stand-in for what a momentum or value investor might see in his returns. We used publicly available daily factor returns dating back to 1926.
 
-From here, we now create a "combined" strategy by equal-weighting the returns from the HML (value) factor, and the momentum factor. All 3 of these strategies show significant autocorrelation, and are thus modeled as an ARMA(5,5) process. A Box-Ljung test confirms that the residuals from this process are prime candidates for GARCH modeling. Given this, we then simulate the residuals as a exponential GARCH(5,5) process with innovations drawn from a skewed Student's t distribution (given that we often find that financial data has quite fat tails).
+From here, we now create a "combined" strategy by equal-weighting the returns from the HML (value) factor, and the momentum factor. All 3 of these strategies show significant autocorrelation, and are thus modeled as an ARMA(5,5) process. A Box-Ljung test confirms that the residuals from this process are prime candidates for GARCH modeling. Given this, we then simulate the residuals as a exponential GARCH(5,5) process with innovations drawn from a skewed Student's t distribution. We chose to use ARMA(5,5) and GARCH(5,5) processes as there was significant autocorrelation between both returns and the residuals of the models for long periods of time (including up to 30 or more trading days afterwards). Given this, we found that a model fit to the 5th degree was significantly more accurate than an ARMA-GARCH(1,1) process. Additionally, we chose to use the exponential GARCH process given the ability of an exponential GARCH process to produce an asymmetric news impact curve. Finally, we chose to use a skewed Student's t distribution for innovations given that Student's t distributions have the preferable value of allowing for fatter tails than Gaussian distributions (and skewed distributions allow for even more flexibility).
 
 It is here that we begin to make use of copulas as a means of understanding the underlying statistic, and we have three sets of data that we may fit copulas to. First, we fit a bivariate copula to the observed monthly returns of momentum and value; next, we fit a bivariate copula to the residuals of the ARMA process; and finally, we fit a bivariate copula to the standardized residuals provided by our eGARCH process. We choose to fit bivariate t-copulas to these processes, as this will allow for the calculation of a tail dependency parameter, a parameter with specific economic and financial implications (that will be explained in further detail later).
 
@@ -40,11 +40,11 @@ Going point by point, we can see that Figures 1 and 2 and the particular "x" pat
 However, the real draw for fund managers would likely come from the low tail dependency parameter of the standardized residuals and Figure 3. This largely (but not entirely) removes one level of risk that fund managers could be worried about. Exogenous shocks to each strategy typically won't be affecting each other, which makes the combination strategy a particularly attractive one (because it implies that one can, at least on some level, predict those times when volatility will move together between the two strategies). Thus the dependency structures only weakly persist into the level of randomness. This reduced level of worry about correlation of shock could have a particularly large effect for those managers committed to certain levels of risk, reducing rebalancing costs. It is worth noting, however, that we find a weak persistence, not a complete lack of persistance. In fact, the persistence seems to be more pronounced than a simple measure of correlation might suggest (see Table 3 for a reference to the extremely low stated correlation of standardized residuals).
 
 \subsection*{Robustness and Errors}
-Finally, we take a quick look at the robustness of our results and the possibility of error within them. As mentioned before, we made use of an ARMA(5,5)-GARCH(5,5) model, and the vast majority of our coefficients registered statistically significant values, even when considering robust standard errors (as seen in Tables 4 and 5). This is less true for our evaluation on the value strategy than for the momentum strategy, but we are pleased with the results. Even further, a quantile-quantile plot of our standardized residuals supports our skewed t-distribution choice, especially for value (see Figs. 4 and 5). 
+Finally, we take a quick look at the robustness of our results and the possibility of error within them. As mentioned before, we made use of an ARMA(5,5)-GARCH(5,5) model, and the vast majority of our coefficients registered statistically significant values, even when considering robust standard errors (as seen in Tables 4 and 5). This is less true for our evaluation on the value strategy than for the momentum strategy, but we are pleased with the results. Even further, a quantile-quantile plot of our standardized residuals supports our skewed t-distribution choice for standardized residuals, especially for value (see Figs. 4 and 5). 
 
 With that said, there can still be some concern over the fitting of our model. Box-Ljung tests on the standardized residuals still suggest that there is significant autocorrelation among them. We chose not to fit higher degree models given both the computational expense and the risks of overfitting. Despite even this, we believe that the results and dependency structures should not change significantly given higher order models. 
 
-The final potential concerns to be noted would be the fitting of the t-copulas. In every case, the maximum likelihood optimization converged and returned estimates (of Spearman's Rho and the degrees of freedom) that were highly significant. Thus, we are satisfied in saying that this fitting is an appropriate one.
+The final potential concerns to be noted would be the fitting of the t-copulas. In every case (the observations, the residuals, and the standardized residuals), the maximum likelihood estimation succeeded and returned parameters (of Spearman's Rho and the degrees of freedom) that were highly significant (see table 6). Thus, we are satisfied in saying that this fitting is an appropriate one.
 
 \subsection*{Conclusion}
 To the best of our knowledge, we are the first to apply a copula-GARCH model to value and momentum simultaneously (especially on the daily level) as a way of measuring the dependency structures underlying the movements of a combination strategy. Our results are mathematically and econometrically sound, and quantify tail risk of the combination strategy in a way that should be of interest to those investing in such a strategy.
@@ -203,4 +203,20 @@ mu & 0.61 \\
 \includegraphics[scale=1]{qqplotval}
 \caption{Q-Q Plot of Standardized Residuals (Value)}
 \end{figure}
+\begin{table}[ht]
+\centering
+\caption{Coefficients on each t-copula}
+\begin{tabular}{rrr}
+  \hline
+ & Spearman's Rho & Degrees of Freedom \\ 
+  \hline
+Observed & -0.032490 & 1.795343 \\ 
+  SE & 0.008082 & 0.030682\\ 
+  Residuals & 0.025346 & 1.783245 \\ 
+  SE & 0.008089 & 0.030288\\ 
+  St. Residuals & -0.022262 & 3.088599 \\ 
+  SE & 0.007709 & 0.081228 \\ 
+   \hline
+\end{tabular}
+\end{table}
 \end{document}
